@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书馆管理系统登录</title>
+    <!-- 引入Vue.js和Element UI的CDN链接 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+
+<!-- 创建一个包含Vue实例的容器 -->
+<div id="app">
+    <el-container>
+        <el-header>
+            <el-row type="flex" justify="center">
+                <el-col :span="12">
+                    <h1 class="display-4">图书馆管理系统登录</h1>
+                </el-col>
+            </el-row>
+        </el-header>
+
+        <el-main>
+            <el-form ref="loginForm" :model="loginForm" label-width="80px">
+                <el-form-item label="用户名" prop="username">
+                    <el-input v-model="loginForm.username" placeholder="请输入用户名"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" prop="password">
+                    <el-input type="password" v-model="loginForm.password" placeholder="请输入密码"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="login">登录</el-button>
+                </el-form-item>
+            </el-form>
+        </el-main>
+
+        <el-footer>
+            <el-row type="flex" justify="center">
+                <el-col :span="12">
+                    <span class="text-muted">欢迎使用图书馆管理系统</span>
+                </el-col>
+            </el-row>
+        </el-footer>
+    </el-container>
+</div>
+
+<!-- 引入Vue.js和Element UI的CDN链接 -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- 引入 Axios -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<!-- 创建Vue实例 -->
+<!-- 创建Vue实例 -->
+<script>
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                loginForm: {
+                    username: '',
+                    password: ''
+                }
+            };
+        },
+        methods: {
+            login() {
+                // 获取用户名和密码
+                const username = this.loginForm.username;
+                const password = this.loginForm.password;
+
+                // 发送 POST 请求到后端
+                axios.post('http://localhost:8080/api/login', { username, password })
+                    .then(response => {
+                        // 登录成功的处理逻辑
+                        const result = response.data;
+                        if (result.code === 0) {
+                            // console.log('登录成功', result.message);
+                            this.$message({
+                                message: '登录成功',
+                                type: 'success'
+                            });
+                            window.location.href = 'show.html';
+
+                        } else {
+                            this.$message({
+                                message: '登录失败：' + result.message,
+                                type: 'error'
+                            });
+
+                        }
+                    })
+                    .catch(error => {
+                        // 登录失败的处理逻辑
+                        console.error('登录失败', error.response.data.message);
+                    });
+            }
+        }
+    });
+</script>
+
+
+<style>
+    .text-muted {
+        color: #999;
+    }
+</style>
+
+</body>
+</html>

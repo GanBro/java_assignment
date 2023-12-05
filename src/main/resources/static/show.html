@@ -6,6 +6,11 @@
     <title>图书搜索</title>
     <!-- 引入Vue.js和Element UI的CDN链接 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        .custom-drawer {
+            height: 1200px;
+        }
+    </style>
 </head>
 <body>
 
@@ -39,6 +44,34 @@
             ></el-pagination>
         </el-main>
     </el-container>
+
+    <!-- 新增图书的抽屉 -->
+    <el-drawer
+            title="新增图书"
+            :visible.sync="drawer"
+            :direction="direction"
+            :before-close="handleClose"
+            class="custom-drawer"
+    >
+        <el-form ref="bookForm" :model="formData" label-width="100px">
+            <el-form-item label="书本名称">
+                <el-input v-model="formData.bookName"></el-input>
+            </el-form-item>
+            <el-form-item label="出版社">
+                <el-input v-model="formData.publisher"></el-input>
+            </el-form-item>
+            <el-form-item label="出版时间">
+                <!-- 修改这里，使用 el-date-picker 来选择日期 -->
+                <el-date-picker v-model="formData.publishTime" type="date" placeholder="选择出版时间"></el-date-picker>
+            </el-form-item>
+            <!-- 其他表单项... -->
+            <el-form-item>
+                <el-button type="primary" @click="saveBook">保存</el-button>
+                <el-button @click="cancelAdd">取消</el-button>
+            </el-form-item>
+        </el-form>
+    </el-drawer>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
@@ -52,11 +85,13 @@
         data() {
             return {
                 searchKeyword: '',
-                bookList: [],        // 所有图书列表
                 pagedBookList: [],   // 当前页面显示的图书列表
                 totalItems: 0,       // 图书总数
                 currentPage: 1,      // 当前页数
-                pageSize: 10         // 每页显示的数量
+                pageSize: 10,        // 每页显示的数量
+                drawer: false,       // 控制抽屉显示/隐藏的变量
+                direction: 'ttb',    // 设置抽屉从上到下开
+                formData: {}         // 用于存储新增图书的表单数据
             };
         },
         methods: {
@@ -78,25 +113,48 @@
                     });
             },
             showBookDetails(book) {
-                // 跳转到书本详细信息页面，你可以使用window.location.href或Vue Router进行页面跳转
+                // 跳转到书本详细信息页面...
             },
             deleteBook(book) {
-                // 在这里实现删除图书的逻辑
-                console.log('删除图书', book);
+                // 在这里实现删除图书的逻辑...
             },
             editBook(book) {
-                // 在这里实现编辑图书的逻辑
-                console.log('编辑图书', book);
+                // 在这里实现编辑图书的逻辑...
             },
             addBook() {
-                // 在这里实现新增图书的逻辑
-                console.log('新增图书');
+                // 打开抽屉并清空表单数据
+                this.drawer = true;
+                this.formData = {};
+            },
+            handleClose(done) {
+                // 可以在这里添加确认关闭的逻辑...
+                done();
             },
             handleCurrentChange(page) {
                 this.currentPage = page;
-                const start = (page - 1) * this.pageSize;
-                const end = start + this.pageSize;
-                this.pagedBookList = this.bookList.slice(start, end);
+                this.searchBooks();  // 调用搜索方法更新数据
+            },
+            saveBook() {
+                // 调用后端API保存图书数据
+                axios.post('http://localhost:8080/api/books', this.formData)
+                    .then(response => {
+                        const result = response.data;
+                        if (result.code === 0) {
+                            this.drawer = false; // 关闭抽屉
+                            this.searchBooks();  // 刷新图书列表
+                            this.$message.success('新增图书成功');
+                        } else {
+                            this.$message.error('新增图书失败：' + result.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('保存图书时出错：', error);
+                    });
+            },
+            cancelAdd() {
+                // 关闭抽屉并清空表单数据
+                this.drawer = false;
+                this.formData = {};
             }
         }
     });

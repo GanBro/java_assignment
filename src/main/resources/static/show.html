@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <style>
         .custom-drawer {
-            height: 1200px;
+            height: 1500px;
         }
     </style>
 </head>
@@ -17,33 +17,47 @@
 <div id="app">
     <el-container>
         <el-main>
-            <el-input v-model="searchKeyword" placeholder="请输入关键字"></el-input>
-            <el-button @click="searchBooks">搜索</el-button>
-            <el-button type="primary" @click="addBook">新增</el-button>
-            <!-- 显示搜索结果的表格 -->
-            <el-table :data="pagedBookList" style="width: 100%">
+            <el-row :gutter="20">
+                <el-col :span="12">
+                    <el-input
+                            v-model="searchKeyword"
+                            placeholder="请输入关键字"
+                            prefix-icon="el-icon-search">
+                    </el-input>
+                </el-col>
+                <el-col :span="6">
+                    <el-button @click="searchBooks" type="primary" icon="el-icon-search">搜索</el-button>
+                </el-col>
+                <el-col :span="6">
+                    <el-button @click="addBook" type="success" icon="el-icon-plus">新增</el-button>
+                </el-col>
+            </el-row>
+            <el-table :data="pagedBookList" style="width: 100%; margin-top: 20px;">
                 <el-table-column prop="bookName" label="书本名称"></el-table-column>
                 <el-table-column prop="publisher" label="出版社"></el-table-column>
                 <el-table-column prop="publishTime" label="出版时间"></el-table-column>
-                <!-- 其他列... -->
+                <el-table-column prop="totalInventory" label="图书库存"></el-table-column>
+                <el-table-column prop="availableBooks" label="可借阅数量"></el-table-column>
                 <el-table-column label="操作">
                     <template slot-scope="scope">
-                        <el-button @click="showBookDetails(scope.row)">详情</el-button>
-                        <el-button type="danger" @click="deleteBook(scope.row)">删除</el-button>
-                        <el-button type="warning" @click="editBook(scope.row)">编辑</el-button>
+                        <el-button @click="showBookDetails(scope.row)" type="text" icon="el-icon-view"></el-button>
+                        <el-button @click="deleteBook(scope.row)" type="text" icon="el-icon-delete" class="text-danger"></el-button>
+                        <el-button @click="editBook(scope.row)" type="text" icon="el-icon-edit" class="text-warning"></el-button>
                     </template>
                 </el-table-column>
             </el-table>
-            <!-- 分页 -->
             <el-pagination
                     @current-change="handleCurrentChange"
                     :current-page="currentPage"
                     :page-size="pageSize"
                     :total="totalItems"
                     layout="prev, pager, next"
-            ></el-pagination>
+                    style="margin-top: 20px;">
+            </el-pagination>
         </el-main>
     </el-container>
+
+
 
     <!-- 新增图书的抽屉 -->
     <el-drawer
@@ -63,6 +77,12 @@
             <el-form-item label="出版时间">
                 <!-- 修改这里，使用 el-date-picker 来选择日期 -->
                 <el-date-picker v-model="formData.publishTime" type="date" placeholder="选择出版时间"></el-date-picker>
+            </el-form-item>
+            <el-form-item label="图书库存">
+                <el-input v-model="formData.totalInventory"></el-input>
+            </el-form-item>
+            <el-form-item label="可借阅数量">
+                <el-input v-model="formData.availableBooks"></el-input>
             </el-form-item>
             <!-- 其他表单项... -->
             <el-form-item>

@@ -10,4 +10,6 @@ public interface BookService {
     List<BookInfo> searchBooks(String query);
 
     List<BookInfo> searchBooksByPage(String query, int pageNum, int pageSize);
+
+    int addBookInfo(BookInfo bookInfo);
 }

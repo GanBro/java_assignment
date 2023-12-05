@@ -12,6 +12,6 @@ public class BookInfo {
     private String bookName;
     private String publisher;
     private String publishDate;
-    private int totalInventory;
-    private int availableBooks;
+    private Integer totalInventory;
+    private Integer availableBooks;
 }

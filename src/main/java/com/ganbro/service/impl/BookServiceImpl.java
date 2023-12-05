@@ -29,4 +29,9 @@ public class BookServiceImpl implements BookService {
         // 返回查询结果
         return page.getResult();
     }
+
+    @Override
+    public int addBookInfo(BookInfo bookInfo) {
+        return bookMapper.addBookInfo(bookInfo);
+    }
 }

@@ -39,4 +39,14 @@ public class BookServiceImpl implements BookService {
     public int getBooksCountByQuery(String query) {
         return bookMapper.getBooksCountByQuery(query);
     }
+
+    @Override
+    public String selectNameById(Integer bookId) {
+        return bookMapper.selectNameById(bookId);
+    }
+
+    @Override
+    public void deleteById(Integer bookId) {
+        bookMapper.deleteById(bookId);
+    }
 }

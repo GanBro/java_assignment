@@ -14,4 +14,8 @@ public interface BookService {
     int addBookInfo(BookInfo bookInfo);
 
     int getBooksCountByQuery(String query);
+
+    String selectNameById(Integer bookId);
+
+    void deleteById(Integer bookId);
 }

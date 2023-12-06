@@ -22,4 +22,10 @@ public interface BookMapper {
 
     @Select("SELECT COUNT(*) FROM book_info WHERE book_name LIKE CONCAT('%', #{query}, '%')")
     int getBooksCountByQuery(String query);
+
+    @Select("select book_name from book_info where book_info_id = #{bookId}")
+    String selectNameById(Integer bookId);
+
+    @Delete("delete from book_info where book_info_id = #{bookId}")
+    void deleteById(Integer bookId);
 }

@@ -63,7 +63,11 @@
             <artifactId>knife4j-openapi2-spring-boot-starter</artifactId>
             <version>4.3.0</version>
         </dependency>
-
+        <!--slf4j-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
 
 
     </dependencies>

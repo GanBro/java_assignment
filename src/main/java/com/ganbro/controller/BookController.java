@@ -41,7 +41,6 @@ public class BookController {
         pageData.setPageSize(pageSize);
         pageData.setCurrentPage(pageNum);
         pageData.setList(books);
-        System.out.println(pageData);
         return Result.success(pageData);
     }
 
@@ -70,10 +69,10 @@ public class BookController {
 
     // 删除图书信息
     @DeleteMapping("/{bookId}")
-    public Result<Void> deleteBook(@PathVariable Long bookId) {
-        // 调用 BookService 中的方法实现删除图书的逻辑
-        // ...
-        return Result.success(null);
+    public Result<Void> deleteBook(@PathVariable Integer bookId) {
+        String name = bookService.selectNameById(bookId);
+        bookService.deleteById(bookId);
+        return Result.success(null, "删除图书" + name + "成功");
     }
 
     // 获取图书详细信息

@@ -10,3 +10,7 @@ mybatis:
   mapper-locations: classpath:/com/ganbro/mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true
+    use-generated-keys: true
+logging:
+  level:
+    com.ganbro.mapper: debug

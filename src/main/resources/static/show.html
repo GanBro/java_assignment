@@ -33,6 +33,7 @@
                 </el-col>
             </el-row>
             <el-table :data="pagedBookList" style="width: 100%; margin-top: 20px;">
+                <el-table-column prop="bookInfoId" label="书本ID"></el-table-column>
                 <el-table-column prop="bookName" label="书本名称"></el-table-column>
                 <el-table-column prop="publisher" label="出版社"></el-table-column>
                 <el-table-column prop="publishTime" label="出版时间"></el-table-column>
@@ -82,9 +83,9 @@
             <el-form-item label="图书库存">
                 <el-input v-model="formData.totalInventory"></el-input>
             </el-form-item>
-            <el-form-item label="可借阅数量">
-                <el-input v-model="formData.availableBooks"></el-input>
-            </el-form-item>
+<!--            <el-form-item label="可借阅数量">-->
+<!--                <el-input v-model="formData.availableBooks"></el-input>-->
+<!--            </el-form-item>-->
             <!-- 其他表单项... -->
             <el-form-item>
                 <el-button type="primary" @click="saveBook">保存</el-button>

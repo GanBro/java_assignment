@@ -47,10 +47,12 @@ public class BookController {
     @PostMapping
     public Result<Void> addBook(@RequestBody BookInfo bookInfo) {
         // 调用 BookService 中的方法实现添加图书的逻辑
+        bookInfo.setAvailableBooks(bookInfo.getTotalInventory()); // 刚添加的可借阅数量等于图书库存
         int cnt = bookService.addBookInfo(bookInfo);
         if (cnt == 0) {
             return Result.error("添加图书失败");
         }
+
         return Result.success(null, "添加成功");
     }
 

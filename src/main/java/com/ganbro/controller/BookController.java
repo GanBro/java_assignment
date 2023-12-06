@@ -1,5 +1,6 @@
 package com.ganbro.controller;
 
+import com.ganbro.domain.common.PageData;
 import com.ganbro.domain.common.Result;
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
@@ -18,20 +19,29 @@ public class BookController {
     private final BookService bookService;
 
     // 搜索图书信息
-    @GetMapping("/search")
-    public Result<List<BookInfo>> searchBooks(@RequestParam String query) {
-        List<BookInfo> books = bookService.searchBooks(query);
-        return Result.success(books);
-    }
+//    @GetMapping("/search")
+//    public Result<List<BookInfo>> searchBooks(@RequestParam String query) {
+//        List<BookInfo> books = bookService.searchBooks(query);
+//        return Result.success(books);
+//    }
 
     // 分页搜索图书信息
     @GetMapping("/searchByPage")
-    public Result<List<BookInfo>> searchBooksByPage(String query,
-                                                    @RequestParam(defaultValue = "1") int pageNum,
-                                                    @RequestParam(defaultValue = "10") int pageSize) {
+    public Result<PageData<BookInfo>> searchBooksByPage(String query,
+                                                        @RequestParam(defaultValue = "1") int pageNum,
+                                                        @RequestParam(defaultValue = "10") int pageSize) {
         List<BookInfo> books = bookService.searchBooksByPage(query, pageNum, pageSize);
-        return Result.success(books);
+        int total = bookService.getBooksCountByQuery(query); // 获取总记录数
+
+        PageData<BookInfo> pageData = new PageData<>();
+        pageData.setTotalItems(total);
+        pageData.setPageSize(pageSize);
+        pageData.setCurrentPage(pageNum);
+        pageData.setList(books);
+        System.out.println(pageData);
+        return Result.success(pageData);
     }
+
 
     // 添加图书信息
     @PostMapping

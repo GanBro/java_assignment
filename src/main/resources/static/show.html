@@ -51,9 +51,10 @@
                     :current-page="currentPage"
                     :page-size="pageSize"
                     :total="totalItems"
-                    layout="prev, pager, next"
-                    style="margin-top: 20px;">
-            </el-pagination>
+                    layout="total, prev, pager, next"
+                    style="margin-top: 20px;"
+            ></el-pagination>
+
         </el-main>
     </el-container>
 
@@ -115,15 +116,17 @@
             };
         },
         methods: {
+            // 修改 searchBooks 方法
             searchBooks() {
                 axios.get(`http://localhost:8080/api/books/searchByPage?query=${this.searchKeyword}&pageNum=${this.currentPage}&pageSize=${this.pageSize}`)
                     .then(response => {
                         const result = response.data;
 
                         if (result.code === 0) {
-                            const { data, total } = result; // data 是当前页的数据，total 是总记录数
-                            this.pagedBookList = data;
-                            this.totalItems = total;
+                            this.pagedBookList = result.data.list; // 获取 books 数组字段的值
+                            this.totalItems = result.data.totalItems; // 获取 totalItems 字段的值
+                            this.currentPage = result.data.currentPage; // 访问页
+                            this.pageSize = result.data.pageSize; // 每页大小
                         } else {
                             this.$message.error('搜索图书失败：' + result.message);
                         }
@@ -131,6 +134,7 @@
                     .catch(error => {
                         console.error('搜索图书时出错：', error);
                     });
+                this.currentPage = 1;
             },
             showBookDetails(book) {
                 // 跳转到书本详细信息页面...

@@ -19,4 +19,7 @@ public interface BookMapper {
             "VALUES (#{bookName}, #{publisher}, #{publishDate}, #{totalInventory}, #{availableBooks})")
     @Options(useGeneratedKeys = true, keyProperty = "bookInfoId")
     int addBookInfo(BookInfo bookInfo);
+
+    @Select("SELECT COUNT(*) FROM book_info WHERE book_name LIKE CONCAT('%', #{query}, '%')")
+    int getBooksCountByQuery(String query);
 }

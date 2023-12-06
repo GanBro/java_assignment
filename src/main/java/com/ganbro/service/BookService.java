@@ -12,4 +12,6 @@ public interface BookService {
     List<BookInfo> searchBooksByPage(String query, int pageNum, int pageSize);
 
     int addBookInfo(BookInfo bookInfo);
+
+    int getBooksCountByQuery(String query);
 }

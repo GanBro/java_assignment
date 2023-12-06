@@ -34,4 +34,9 @@ public class BookServiceImpl implements BookService {
     public int addBookInfo(BookInfo bookInfo) {
         return bookMapper.addBookInfo(bookInfo);
     }
+
+    @Override
+    public int getBooksCountByQuery(String query) {
+        return bookMapper.getBooksCountByQuery(query);
+    }
 }

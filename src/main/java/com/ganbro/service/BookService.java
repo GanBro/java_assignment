@@ -18,4 +18,6 @@ public interface BookService {
     String selectNameById(Integer bookId);
 
     void deleteById(Integer bookId);
+
+    boolean updateByBookInfo(BookInfo bookInfo);
 }

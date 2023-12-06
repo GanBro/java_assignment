@@ -49,4 +49,10 @@ public class BookServiceImpl implements BookService {
     public void deleteById(Integer bookId) {
         bookMapper.deleteById(bookId);
     }
+
+    @Override
+    public boolean updateByBookInfo(BookInfo bookInfo) {
+        int cnt = bookMapper.updateByBookInfo(bookInfo);
+        return cnt > 0;
+    }
 }

@@ -36,7 +36,7 @@
                 <el-table-column prop="bookInfoId" label="书本ID"></el-table-column>
                 <el-table-column prop="bookName" label="书本名称"></el-table-column>
                 <el-table-column prop="publisher" label="出版社"></el-table-column>
-                <el-table-column prop="publishTime" label="出版时间"></el-table-column>
+                <el-table-column prop="publishDate" label="出版时间"></el-table-column>
                 <el-table-column prop="totalInventory" label="图书库存"></el-table-column>
                 <el-table-column prop="availableBooks" label="可借阅数量"></el-table-column>
                 <el-table-column label="操作">
@@ -80,7 +80,7 @@
             </el-form-item>
             <el-form-item label="出版时间">
                 <!-- 修改这里，使用 el-date-picker 来选择日期 -->
-                <el-date-picker v-model="formData.publishTime" type="date" placeholder="选择出版时间"></el-date-picker>
+                <el-date-picker v-model="formData.publishDate" type="date" placeholder="选择出版时间"></el-date-picker>
             </el-form-item>
             <el-form-item label="图书库存">
                 <el-input v-model="formData.totalInventory"></el-input>
@@ -90,7 +90,8 @@
 <!--            </el-form-item>-->
             <!-- 其他表单项... -->
             <el-form-item>
-                <el-button type="primary" @click="saveBook">保存</el-button>
+<!--                <el-button type="primary" @click="saveBook">保存</el-button>-->
+                <el-button type="primary" @click="handleSave">保存</el-button>
                 <el-button @click="cancelAdd">取消</el-button>
             </el-form-item>
         </el-form>
@@ -102,6 +103,8 @@
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <!-- 引入 Axios -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!--日期格式化处理-->
+<script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 
 <script>
     new Vue({
@@ -115,7 +118,8 @@
                 pageSize: 5,        // 每页显示的数量
                 drawer: false,       // 控制抽屉显示/隐藏的变量
                 direction: 'ttb',    // 设置抽屉从上到下开
-                formData: {}         // 用于存储新增图书的表单数据
+                formData: {},         // 用于存储新增图书的表单数据
+                flag: 0               // 0新增1编辑
             };
         },
         methods: {
@@ -171,8 +175,11 @@
                     // 取消删除操作
                 });
             },
-            editBook(book) {
+            editBook(bookInfo) {
                 // 在这里实现编辑图书的逻辑...
+                this.drawer = true
+                this.formData = bookInfo
+                this.flag = 1 // 编辑框
             },
             addBook() {
                 // 打开抽屉并清空表单数据
@@ -188,30 +195,64 @@
                 this.currentPage = page;
                 this.searchBooks(this.currentPage, this.pageSize);  // 调用搜索方法更新数据
             },
+            // 0新增，1修改
             saveBook() {
                 // 调用后端API保存图书数据
-                axios.post('http://localhost:8080/api/books', this.formData)
-                    .then(response => {
-                        const result = response.data;
-                        if (result.code === 0) {
-                            this.drawer = false; // 关闭抽屉
-                            this.searchBooks(this.currentPage, this.pageSize);  // 刷新图书列表
-                            this.$message.success('新增图书成功');
-                        } else {
-                            this.$message.error('新增图书失败：' + result.message);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('保存图书时出错：', error);
-                    });
+                if (this.flag === 0) {
+                    this.formData.publishDate = moment(this.formData.publishDate).format('YYYY-MM-DD')
+                    // console.log(this.formData)
+                    axios.post('http://localhost:8080/api/books', this.formData)
+                        .then(response => {
+                            const result = response.data;
+                            if (result.code === 0) {
+                                this.drawer = false; // 关闭抽屉
+                                this.searchBooks(this.currentPage, this.pageSize);  // 刷新图书列表
+                                this.$message.success('新增图书成功');
+                            } else {
+                                this.$message.error('新增图书失败：' + result.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('新增图书时出错：', error);
+                        });
+                } else if (this.flag === 1) {
+                    this.flag = 0
+                    // this.formData.publishDate = moment(this.formData.publishDate).format('YYYY-MM-DD')
+                    // 编辑的日期是正常的不用改
+                    axios.put('http://localhost:8080/api/books', this.formData)
+                        .then(response => {
+                            const result = response.data;
+                            if (result.code === 0) {
+
+                                this.drawer = false; // 关闭抽屉
+                                this.searchBooks(this.currentPage, this.pageSize);  // 刷新图书列表
+                                this.$message.success('保存图书成功');
+                            } else {
+                                this.$message.error('保存图书失败：' + result.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('保存图书时出错：', error);
+                        });
+                }
             },
             cancelAdd() {
                 // 关闭抽屉并清空表单数据
                 this.drawer = false;
                 this.formData = {};
+            },
+            handleSave() {
+                console.log("执行")
+                this.saveBook()
+                // if (this.flag === 0) {
+                //     this.saveBook();
+                // } else {
+                //     this.editBook(this.formData);
+                // }
             }
         },
         mounted() {
+            this.formData = {};
             this.searchBooks(this.currentPage, this.pageSize);
         }
     });

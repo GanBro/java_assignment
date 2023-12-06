@@ -25,7 +25,7 @@ CREATE TABLE book_info (
                            book_info_id INT PRIMARY KEY,
                            book_name VARCHAR(50),
                            publisher VARCHAR(50),
-                           publish_date VARCHAR(10),
+                           publish_date DATE,
                            total_inventory INT,
                            available_books INT
 );

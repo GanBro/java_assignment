@@ -16,6 +16,7 @@ public class BookDetail {
     private String publishDate;
     private Boolean isBorrowed;
     private Long userId;
-    private Date startDate;
-    private Date dueDate;
+    // 数据库是Date型，这里用String简便代替
+    private String startDate;
+    private String dueDate;
 }

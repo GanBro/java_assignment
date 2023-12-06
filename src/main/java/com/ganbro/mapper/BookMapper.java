@@ -28,4 +28,10 @@ public interface BookMapper {
 
     @Delete("delete from book_info where book_info_id = #{bookId}")
     void deleteById(Integer bookId);
+
+    @Update("UPDATE book_info SET book_name = #{bookName}, publisher = #{publisher}, " +
+            "publish_date = #{publishDate}, total_inventory = #{totalInventory}" +
+            " WHERE book_info_id = #{bookInfoId}")
+    int updateByBookInfo(BookInfo bookInfo);
+
 }

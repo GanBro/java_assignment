@@ -8,6 +8,7 @@ import com.ganbro.service.BookService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:63342")
-//@Api(tags = "图书接口", description = "提供图书相关的接口")
+@Slf4j
 @Api(tags = "图书接口")
 public class BookController {
 
@@ -35,12 +36,12 @@ public class BookController {
     public Result<PageData<BookInfo>> searchBooksByPage(String query, int pageNum, int pageSize) {
         List<BookInfo> books = bookService.searchBooksByPage(query, pageNum, pageSize);
         int total = bookService.getBooksCountByQuery(query); // 获取总记录数
-
         PageData<BookInfo> pageData = new PageData<>();
         pageData.setTotalItems(total);
         pageData.setPageSize(pageSize);
         pageData.setCurrentPage(pageNum);
         pageData.setList(books);
+//        log.error(String.valueOf(pageData));
         return Result.success(pageData);
     }
 
@@ -60,11 +61,15 @@ public class BookController {
     }
 
     // 修改图书信息
-    @PutMapping("/{bookId}")
-    public Result<Void> updateBook(@PathVariable Long bookId, @RequestBody BookInfo bookInfo) {
-        // 调用 BookService 中的方法实现修改图书的逻辑
-        // ...
-        return Result.success(null);
+    @PutMapping
+    @ApiOperation(value = "修改图书信息")
+    public Result<Void> updateBook(@RequestBody BookInfo bookInfo) {
+        boolean success = bookService.updateByBookInfo(bookInfo);  // 调用 Service 层方法进行更新
+        if (success) {
+            return Result.success(null,"修改图书信息成功");  // 返回成功结果
+        } else {
+            return Result.error("修改图书信息失败");  // 返回失败结果
+        }
     }
 
     // 删除图书信息

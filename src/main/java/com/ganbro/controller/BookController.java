@@ -27,9 +27,7 @@ public class BookController {
 
     // 分页搜索图书信息
     @GetMapping("/searchByPage")
-    public Result<PageData<BookInfo>> searchBooksByPage(String query,
-                                                        @RequestParam(defaultValue = "1") int pageNum,
-                                                        @RequestParam(defaultValue = "10") int pageSize) {
+    public Result<PageData<BookInfo>> searchBooksByPage(String query, int pageNum, int pageSize) {
         List<BookInfo> books = bookService.searchBooksByPage(query, pageNum, pageSize);
         int total = bookService.getBooksCountByQuery(query); // 获取总记录数
 

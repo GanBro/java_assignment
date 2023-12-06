@@ -26,7 +26,7 @@
                     </el-input>
                 </el-col>
                 <el-col :span="6">
-                    <el-button @click="searchBooks" type="primary" icon="el-icon-search">搜索</el-button>
+                    <el-button @click="searchBooks(this.currentPage, this.pageSize)" type="primary" icon="el-icon-search">搜索</el-button>
                 </el-col>
                 <el-col :span="6">
                     <el-button @click="addBook" type="success" icon="el-icon-plus">新增</el-button>
@@ -47,6 +47,7 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <!--@current-change="handleCurrentChange"  点击分页数字时调用的方法-->
             <el-pagination
                     @current-change="handleCurrentChange"
                     :current-page="currentPage"
@@ -110,7 +111,7 @@
                 pagedBookList: [],   // 当前页面显示的图书列表
                 totalItems: 0,       // 图书总数
                 currentPage: 1,      // 当前页数
-                pageSize: 10,        // 每页显示的数量
+                pageSize: 5,        // 每页显示的数量
                 drawer: false,       // 控制抽屉显示/隐藏的变量
                 direction: 'ttb',    // 设置抽屉从上到下开
                 formData: {}         // 用于存储新增图书的表单数据
@@ -118,13 +119,15 @@
         },
         methods: {
             // 修改 searchBooks 方法
-            searchBooks() {
-                axios.get(`http://localhost:8080/api/books/searchByPage?query=${this.searchKeyword}&pageNum=${this.currentPage}&pageSize=${this.pageSize}`)
+            searchBooks(currentPage, pageSize) {
+                axios.get(`http://localhost:8080/api/books/searchByPage?query=${this.searchKeyword}&pageNum=${currentPage}&pageSize=${pageSize}`)
                     .then(response => {
                         const result = response.data;
 
                         if (result.code === 0) {
-                            this.pagedBookList = result.data.list; // 获取 books 数组字段的值
+                            const startIndex = (currentPage - 1) * pageSize; // 计算起始索引
+                            const endIndex = startIndex + pageSize; // 计算结束索引
+                            this.pagedBookList = result.data.list.slice(startIndex, endIndex); // 获取指定范围的数据
                             this.totalItems = result.data.totalItems; // 获取 totalItems 字段的值
                             this.currentPage = result.data.currentPage; // 访问页
                             this.pageSize = result.data.pageSize; // 每页大小
@@ -135,7 +138,6 @@
                     .catch(error => {
                         console.error('搜索图书时出错：', error);
                     });
-                this.currentPage = 1;
             },
             showBookDetails(book) {
                 // 跳转到书本详细信息页面...
@@ -155,9 +157,10 @@
                 // 可以在这里添加确认关闭的逻辑...
                 done();
             },
+            <!--@current-change="handleCurrentChange"  点击分页数字时调用的方法-->
             handleCurrentChange(page) {
                 this.currentPage = page;
-                this.searchBooks();  // 调用搜索方法更新数据
+                this.searchBooks(this.currentPage, this.pageSize);  // 调用搜索方法更新数据
             },
             saveBook() {
                 // 调用后端API保存图书数据
@@ -166,7 +169,7 @@
                         const result = response.data;
                         if (result.code === 0) {
                             this.drawer = false; // 关闭抽屉
-                            this.searchBooks();  // 刷新图书列表
+                            this.searchBooks(this.currentPage, this.pageSize);  // 刷新图书列表
                             this.$message.success('新增图书成功');
                         } else {
                             this.$message.error('新增图书失败：' + result.message);
@@ -181,6 +184,9 @@
                 this.drawer = false;
                 this.formData = {};
             }
+        },
+        mounted() {
+            this.searchBooks(this.currentPage, this.pageSize);
         }
     });
 </script>

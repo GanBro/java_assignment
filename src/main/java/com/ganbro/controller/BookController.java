@@ -5,6 +5,8 @@ import com.ganbro.domain.common.Result;
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
 import com.ganbro.service.BookService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +16,8 @@ import java.util.List;
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:63342")
+//@Api(tags = "图书接口", description = "提供图书相关的接口")
+@Api(tags = "图书接口")
 public class BookController {
 
     private final BookService bookService;
@@ -27,6 +31,7 @@ public class BookController {
 
     // 分页搜索图书信息
     @GetMapping("/searchByPage")
+    @ApiOperation(value = "分页搜索图书信息")
     public Result<PageData<BookInfo>> searchBooksByPage(String query, int pageNum, int pageSize) {
         List<BookInfo> books = bookService.searchBooksByPage(query, pageNum, pageSize);
         int total = bookService.getBooksCountByQuery(query); // 获取总记录数
@@ -43,6 +48,7 @@ public class BookController {
 
     // 添加图书信息
     @PostMapping
+    @ApiOperation(value = "添加图书信息")
     public Result<Void> addBook(@RequestBody BookInfo bookInfo) {
         // 调用 BookService 中的方法实现添加图书的逻辑
         bookInfo.setAvailableBooks(bookInfo.getTotalInventory()); // 刚添加的可借阅数量等于图书库存

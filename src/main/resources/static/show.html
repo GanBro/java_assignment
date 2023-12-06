@@ -123,11 +123,13 @@
                 axios.get(`http://localhost:8080/api/books/searchByPage?query=${this.searchKeyword}&pageNum=${currentPage}&pageSize=${pageSize}`)
                     .then(response => {
                         const result = response.data;
-
                         if (result.code === 0) {
-                            const startIndex = (currentPage - 1) * pageSize; // 计算起始索引
-                            const endIndex = startIndex + pageSize; // 计算结束索引
-                            this.pagedBookList = result.data.list.slice(startIndex, endIndex); // 获取指定范围的数据
+                            // 框架自动写了，不用自己算索引
+                            // const startIndex = (currentPage - 1) * pageSize; // 计算起始索引
+                            // const endIndex = Math.min(startIndex + pageSize, result.data.totalItems); // 计算结束索引，并确保不超过数据列表长度
+                            // this.pagedBookList = result.data.list.slice(startIndex, endIndex); // 获取指定范围的数据
+                            this.pagedBookList = result.data.list
+                            // console.log(JSON.stringify(this.pagedBookList));
                             this.totalItems = result.data.totalItems; // 获取 totalItems 字段的值
                             this.currentPage = result.data.currentPage; // 访问页
                             this.pageSize = result.data.pageSize; // 每页大小
@@ -139,6 +141,7 @@
                         console.error('搜索图书时出错：', error);
                     });
             },
+
             showBookDetails(book) {
                 // 跳转到书本详细信息页面...
             },

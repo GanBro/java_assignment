@@ -57,8 +57,6 @@ public class BookServiceImpl implements BookService {
     @Override
     public boolean updateByBookInfo(BookInfo bookInfo) {
         int sub = bookMapper.selectTotalInventoryById(bookInfo.getBookInfoId()) - bookInfo.getTotalInventory();
-        log.error(String.valueOf(bookInfo));
-        log.error(String.valueOf(sub));
         int cnt = bookMapper.updateByBookInfo(bookInfo, sub);
         return cnt > 0;
     }
@@ -119,6 +117,34 @@ public class BookServiceImpl implements BookService {
         BookInfo bookInfo = bookMapper.selectBookInfoById(bookInfoId);
         log.error(String.valueOf(bookInfo));
         bookMapper.deleteBookDetailByBookInfo(bookInfo);
+    }
+
+    @Override
+    public boolean updateByBookDetail(BookDetail bookDetail) {
+        // todo
+        // 判断收本名称或者出版社是否更改，执行逻辑
+        BookDetail bookDetail1 = bookMapper.selectBookDetailById(bookDetail.getBookId());
+        // 没更改就不用管, 改了就+1
+        if (bookDetail1.getBookName().equals(bookDetail.getBookName()) &&
+                bookDetail1.getPublisher().equals(bookDetail.getPublisher())) {
+            // 不用管
+        } else {
+
+        }
+        int cnt = bookMapper.updateByBookDetail(bookDetail);
+        return cnt > 0;
+    }
+
+    @Override
+    public void updateBookInfoStockAndAvailabelBooks() {
+        List<BookInfo> bookInfos = bookMapper.selectAllBookInfo();
+        for (BookInfo bookInfo : bookInfos) {
+            List<BookDetail> bookDetails = bookMapper.selectBookDetailByBookInfo(bookInfo);
+            bookMapper.updateTotalInventory(bookDetails.size(), bookInfo.getBookInfoId());
+            bookMapper.updateAvailableBooks(bookDetails.size(), bookInfo.getBookInfoId());
+            // todo: 可用图书还没改
+            bookInfo.setAvailableBooks(bookDetails.size());
+        }
     }
 
 

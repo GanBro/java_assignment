@@ -16,7 +16,6 @@
     <select id="selectBookDetailByBookInfo" resultType="com.ganbro.domain.entity.BookDetail">
         select * from book_details where book_name = #{bookInfo.bookName} and publisher = #{bookInfo.publisher}
     </select>
-
     <update id="addTotalInventoryById">
         UPDATE book_info SET total_inventory = total_inventory + #{totalInventory} WHERE book_info_id = #{id}
     </update>
@@ -45,5 +44,17 @@
             available_books = CASE WHEN (available_books - #{sub}) > 0 THEN (available_books - #{sub}) ELSE 0 END
         WHERE book_info_id = #{bookInfo.bookInfoId}
     </update>
+    <update id="updateByBookDetail">
+        UPDATE book_details
+        SET book_name = #{bookDetail.bookName},
+        publisher = #{bookDetail.publisher},
+        publish_date = #{bookDetail.publishDate},
+        is_borrowed = #{bookDetail.isBorrowed},
+        user_id = #{bookDetail.userId},
+        start_date = #{bookDetail.startDate},
+        due_date = #{bookDetail.dueDate}
+        WHERE book_id = #{bookDetail.bookId}
+    </update>
+
 
 </mapper>

@@ -12,7 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookInfo {
-    private Long bookInfoId;
+    private Integer bookInfoId;
     private String bookName;
     private String publisher;
 //    @JsonFormat(pattern = "yyyy-MM-dd")

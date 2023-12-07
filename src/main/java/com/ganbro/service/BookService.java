@@ -28,4 +28,8 @@ public interface BookService {
     List<BookDetail> selectBookDetailByBookInfo(Integer bookInfoId);
 
     void deleteBookDetailsByBookId(Integer bookInfoId);
+
+    boolean updateByBookDetail(BookDetail bookDetail);
+
+    void updateBookInfoStockAndAvailabelBooks();
 }

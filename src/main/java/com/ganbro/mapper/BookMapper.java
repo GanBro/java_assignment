@@ -48,7 +48,7 @@ public interface BookMapper {
     void addAvailableBooksById(@Param("id")Integer id, @Param("availableBooks")Integer availableBooks);
 
     @Select("select total_inventory from book_info where book_info_id = #{id}")
-    int selectTotalInventoryById(Long bookInfoId);
+    Integer selectTotalInventoryById(Integer bookInfoId);
 
     @Select("select * from book_details where book_id = #{id}")
     BookDetail selectBookDetailById(Integer bookId);
@@ -61,4 +61,15 @@ public interface BookMapper {
     void deleteBookDetailByBookInfo(@Param("bookInfo") BookInfo bookInfo);
 
     void insertByBookDetailAndCnt(@Param("bookDetail") BookDetail bookDetail);
+
+    int updateByBookDetail(@Param("bookDetail") BookDetail bookDetail);
+
+    @Select("select * from book_info")
+    List<BookInfo> selectAllBookInfo();
+
+    @Update("update book_info set total_inventory = #{size} where book_info_id = #{bookInfoId}")
+    void updateTotalInventory(int size, Integer bookInfoId);
+
+    @Update("update book_info set available_books = #{size} where book_info_id = #{bookInfoId}")
+    void updateAvailableBooks(int size, Integer bookInfoId);
 }

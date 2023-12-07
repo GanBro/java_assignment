@@ -134,6 +134,12 @@
                     <span v-else>null</span>
                 </template>
             </el-table-column>
+            <el-table-column label="操作">
+                <template slot-scope="scope">
+                    <el-button type="primary" size="mini" @click="handleEdit(scope.row)">修改</el-button>
+                    <el-button type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+                </template>
+            </el-table-column>
         </el-table>
         <!--图书详情分页-->
         <el-pagination
@@ -329,13 +335,12 @@
                 this.formData = {};
             },
             handleSave() {
-                console.log("执行")
                 this.saveBook();
-                // if (this.flag === 0) {
-                //     this.saveBook();
-                // } else {
-                //     this.editBook(this.formData);
-                // }
+            },
+            handleEdit(bookDetail) {
+                localStorage.setItem('data', JSON.stringify(bookDetail));
+                // 在跳转时将数据作为参数传递
+                window.location.href = 'editPage.html?data=' + encodeURIComponent(JSON.stringify(bookDetail));
             },
         },
         mounted() {

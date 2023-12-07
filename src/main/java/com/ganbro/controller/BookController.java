@@ -27,6 +27,8 @@ public class BookController {
     @GetMapping("/searchByPage")
     @ApiOperation(value = "分页搜索图书信息")
     public Result<PageData<BookInfo>> searchBooksByPage(String query, int pageNum, int pageSize) {
+        // 更新所有BookInfo的库存和可借阅数量
+        bookService.updateBookInfoStockAndAvailabelBooks();
         List<BookInfo> books = bookService.searchBooksByPage(query, pageNum, pageSize);
         int total = bookService.getBooksCountByQuery(query); // 获取总记录数
         PageData<BookInfo> pageData = new PageData<>();
@@ -45,11 +47,21 @@ public class BookController {
         return Result.success(null,"添加成功");
     }
 
-    // 修改图书信息
     @PutMapping
     @ApiOperation(value = "修改图书信息")
-    public Result<Void> updateBook(@RequestBody BookInfo bookInfo) {
+    public Result<Void> updateBookInfo(@RequestBody BookInfo bookInfo) {
         boolean success = bookService.updateByBookInfo(bookInfo);  // 调用 Service 层方法进行更新
+        if (success) {
+            return Result.success(null,"修改图书信息成功");  // 返回成功结果
+        } else {
+            return Result.error("修改图书信息失败");  // 返回失败结果
+        }
+    }
+
+    @PutMapping("/detail")
+    @ApiOperation(value = "修改图书详细信息")
+    public Result<Void> updateBookDetail(@RequestBody BookDetail bookDetail) {
+        boolean success = bookService.updateByBookDetail(bookDetail);  // 调用 Service 层方法进行更新
         if (success) {
             return Result.success(null,"修改图书信息成功");  // 返回成功结果
         } else {

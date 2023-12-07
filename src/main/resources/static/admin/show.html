@@ -105,7 +105,7 @@
             :before-close="handleClose"
             class="custom-drawer"
     >
-        <el-table :data="detailFormData">
+        <el-table :data="paginatedDetailData">
             <el-table-column label="书本ID" prop="bookId">
             </el-table-column>
             <el-table-column label="书本名称" prop="bookName"></el-table-column>
@@ -142,7 +142,7 @@
                 :page-size="pageSizeDetail"
                 :page-sizes="[10, 20, 30, 40]"
                 layout="total, prev, pager, next"
-                :total="detailFormData.length"
+                :total="Object.values(detailFormData).length"
         ></el-pagination>
     </el-drawer>
 
@@ -168,7 +168,7 @@
                 currentPage: 1,      // 当前页数
                 currentPageDetail: 1,  // 详细信息当前页数
                 pageSizeDetail: 5,  // 每页显示的详细信息数量
-                pageSize: 3,        // 每页显示的数量
+                pageSize: 5,        // 每页显示的数量
                 drawer: false,       // 控制抽屉显示/隐藏的变量
                 direction: 'ttb',    // 设置抽屉从上到下开
                 formData: {},         // 用于存储新增图书的表单数据
@@ -337,12 +337,22 @@
             this.searchBooks(this.currentPage, this.pageSize);
         },
         computed: {
-            pagedDetailFormData() {
-                const startIndex = (this.currentPage - 1) * this.pageSizeDetail;
-                const endIndex = startIndex + this.pageSizeDetail;
-                return this.detailFormData.slice(startIndex, endIndex);
+            paginatedDetailData() {
+                // 每页显示的数量
+                const pageSize = this.pageSizeDetail;
+                // 计算起始索引
+                const startIndex = (this.currentPageDetail - 1) * pageSize;
+                // 计算结束索引
+                const endIndex = startIndex + pageSize;
+
+                // 将对象的值转换为数组
+                const dataArray = Object.values(this.detailFormData);
+
+                // 返回当前页的数据
+                return dataArray.slice(startIndex, endIndex);
             }
-        }
+        },
+
 
     });
 </script>

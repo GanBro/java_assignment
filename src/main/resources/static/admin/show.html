@@ -63,7 +63,7 @@
 
 
 
-    <!-- 新增图书的抽屉 -->
+    <!-- 新增和编辑图书的抽屉 -->
     <el-drawer
             title="新增图书"
             :visible.sync="drawer"
@@ -82,7 +82,7 @@
                 <!-- 修改这里，使用 el-date-picker 来选择日期 -->
                 <el-date-picker v-model="formData.publishDate" type="date" placeholder="选择出版时间"></el-date-picker>
             </el-form-item>
-            <el-form-item label="图书库存">
+            <el-form-item label="图书库存" v-if="showTotalInventory">
                 <el-input v-model="formData.totalInventory"></el-input>
             </el-form-item>
 <!--            <el-form-item label="可借阅数量">-->
@@ -105,7 +105,7 @@
             :before-close="handleClose"
             class="custom-drawer"
     >
-        <el-table :data="detailFormData">
+        <el-table :data="paginatedDetailData">
             <el-table-column label="书本ID" prop="bookId">
             </el-table-column>
             <el-table-column label="书本名称" prop="bookName"></el-table-column>
@@ -142,7 +142,7 @@
                 :page-size="pageSizeDetail"
                 :page-sizes="[10, 20, 30, 40]"
                 layout="total, prev, pager, next"
-                :total="detailFormData.length"
+                :total="Object.values(detailFormData).length"
         ></el-pagination>
     </el-drawer>
 
@@ -168,13 +168,14 @@
                 currentPage: 1,      // 当前页数
                 currentPageDetail: 1,  // 详细信息当前页数
                 pageSizeDetail: 5,  // 每页显示的详细信息数量
-                pageSize: 3,        // 每页显示的数量
+                pageSize: 5,        // 每页显示的数量
                 drawer: false,       // 控制抽屉显示/隐藏的变量
                 direction: 'ttb',    // 设置抽屉从上到下开
                 formData: {},         // 用于存储新增图书的表单数据
                 flag: 0,               // 0新增1编辑
                 detailDrawer: false,  // 图书详情抽屉
                 detailFormData: {},    // 用于显示图书详情的表单数据
+                showDetail: true,    // 用于控制是否显示图书详情
             };
         },
         methods: {
@@ -255,6 +256,7 @@
             },
             editBook(bookInfo) {
                 // 在这里实现编辑图书的逻辑...
+                this.showDetail = false
                 this.drawer = true
                 this.formData = bookInfo
                 this.flag = 1 // 编辑框
@@ -266,9 +268,11 @@
             },
             handleClose(done) {
                 // 可以在这里添加确认关闭的逻辑...
+                this.showDetail = true;
                 done();
             },
             detailHandleClose(done) {
+                this.showDetail = true;
                 done();
             },
             <!--@current-change="handleCurrentChange"  点击分页数字时调用的方法-->
@@ -317,8 +321,10 @@
                         });
                 }
             },
+            // 取消键
             cancelAdd() {
                 // 关闭抽屉并清空表单数据
+                this.showDetail = true;
                 this.drawer = false;
                 this.formData = {};
             },
@@ -337,12 +343,25 @@
             this.searchBooks(this.currentPage, this.pageSize);
         },
         computed: {
-            pagedDetailFormData() {
-                const startIndex = (this.currentPage - 1) * this.pageSizeDetail;
-                const endIndex = startIndex + this.pageSizeDetail;
-                return this.detailFormData.slice(startIndex, endIndex);
+            paginatedDetailData() {
+                // 每页显示的数量
+                const pageSize = this.pageSizeDetail;
+                // 计算起始索引
+                const startIndex = (this.currentPageDetail - 1) * pageSize;
+                // 计算结束索引
+                const endIndex = startIndex + pageSize;
+
+                // 将对象的值转换为数组
+                const dataArray = Object.values(this.detailFormData);
+
+                // 返回当前页的数据
+                return dataArray.slice(startIndex, endIndex);
+            },
+            showTotalInventory() {
+                return this.showDetail === true
             }
-        }
+        },
+
 
     });
 </script>

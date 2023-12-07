@@ -90,8 +90,10 @@ public class BookServiceImpl implements BookService {
         BeanUtil.copyProperties(bookInfo, bookDetail);
         bookDetail.setIsBorrowed(false); // 默认没借出去
         List<BookInfo> bookInfos= bookMapper.selectByBookNameAndPublisher(bookDetail.getBookName(), bookDetail.getPublisher());
-//        log.error(bookInfos.toString());
-        bookMapper.insertByBookDetail(bookDetail); // 无论是否上面为空都要插入
+        // 插入cnt次
+        for (int i = 0; i < bookInfo.getTotalInventory(); i++) {
+            bookMapper.insertByBookDetailAndCnt(bookDetail);
+        }
         if (!bookInfos.isEmpty()) { // 不为空
             Integer id = bookMapper.selectBookInfoIdByBookNameAndPublisher(bookDetail.getBookName(), bookDetail.getPublisher());
             // 增加库存数量
@@ -110,6 +112,13 @@ public class BookServiceImpl implements BookService {
     public List<BookDetail> selectBookDetailByBookInfo(Integer bookInfoId) {
         BookInfo bookInfo = bookMapper.selectBookInfoById(bookInfoId);
         return bookMapper.selectBookDetailByBookInfo(bookInfo);
+    }
+
+    @Override
+    public void deleteBookDetailsByBookId(Integer bookInfoId) {
+        BookInfo bookInfo = bookMapper.selectBookInfoById(bookInfoId);
+        log.error(String.valueOf(bookInfo));
+        bookMapper.deleteBookDetailByBookInfo(bookInfo);
     }
 
 

@@ -37,7 +37,7 @@ public class BookController {
         return Result.success(pageData);
     }
 
-    // 添加图书信息
+    // 新增图书信息
     @PostMapping
     @ApiOperation(value = "添加图书信息")
     public Result<Void> addBook(@RequestBody BookInfo bookInfo) {
@@ -59,9 +59,11 @@ public class BookController {
 
     // 删除图书信息
     @DeleteMapping("/{bookId}")
-    public Result<Void> deleteBook(@PathVariable Integer bookId) {
-        String name = bookService.selectNameById(bookId);
-        bookService.deleteById(bookId);
+    @ApiOperation(value = "删除图书信息")
+    public Result<Void> deleteBook(@PathVariable("bookId") Integer bookInfoId) {
+        String name = bookService.selectNameById(bookInfoId);
+        bookService.deleteBookDetailsByBookId(bookInfoId);
+        bookService.deleteById(bookInfoId);
         return Result.success(null, "删除图书" + name + "成功");
     }
 

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.ganbro.mapper.BookMapper">
+    <delete id="deleteBookDetailByBookInfo">
+        DELETE from book_details
+        where book_name = #{bookInfo.bookName} and publisher = #{bookInfo.publisher}
+    </delete>
 
     <select id="selectByBookNameAndPublisher" parameterType="map" resultType="com.ganbro.domain.entity.BookInfo">
         SELECT * FROM book_info WHERE book_name = #{bookName} AND publisher = #{publisher}
@@ -24,6 +28,12 @@
     <insert id="insertByBookInfo" parameterType="com.ganbro.domain.entity.BookInfo">
         INSERT INTO book_info(book_name, publisher, publish_date, total_inventory, available_books)
         VALUES(#{bookName}, #{publisher}, #{publishDate}, #{totalInventory}, #{availableBooks})
+    </insert>
+
+    <insert id="insertByBookDetailAndCnt" parameterType="map">
+        INSERT INTO book_details (book_id, book_name, publisher, publish_date, is_borrowed, user_id, start_date, due_date)
+        VALUES
+            (#{bookDetail.bookId}, #{bookDetail.bookName}, #{bookDetail.publisher}, #{bookDetail.publishDate}, #{bookDetail.isBorrowed}, #{bookDetail.userId}, #{bookDetail.startDate}, #{bookDetail.dueDate})
     </insert>
 
     <update id="updateByBookInfo" parameterType="com.ganbro.domain.entity.BookInfo">

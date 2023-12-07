@@ -26,4 +26,6 @@ public interface BookService {
     void insertByBookBookInfo(BookInfo bookInfo);
 
     List<BookDetail> selectBookDetailByBookInfo(Integer bookInfoId);
+
+    void deleteBookDetailsByBookId(Integer bookInfoId);
 }

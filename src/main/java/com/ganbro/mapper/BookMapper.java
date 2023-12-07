@@ -32,9 +32,9 @@ public interface BookMapper {
 
     int updateByBookInfo(@Param("bookInfo") BookInfo bookInfo, @Param("sub") int sub);
 
-    @Insert("INSERT INTO book_details (book_name, publisher, publish_date, is_borrowed) " +
-            "VALUES (#{bookName}, #{publisher}, #{publishDate}, #{isBorrowed})")
-    void insertByBookDetail(BookDetail bookDetail);
+//    @Insert("INSERT INTO book_details (book_name, publisher, publish_date, is_borrowed) " +
+//            "VALUES (#{bookName}, #{publisher}, #{publishDate}, #{isBorrowed})")
+//    void insertByBookDetail(BookDetail bookDetail);
 
     List<BookInfo> selectByBookNameAndPublisher(@Param("bookName") String bookName, @Param("publisher") String publisher);
 
@@ -57,4 +57,8 @@ public interface BookMapper {
 
     @Select("select * from book_info where book_info_id = #{bookInfoId}")
     BookInfo selectBookInfoById(Integer bookInfoId);
+
+    void deleteBookDetailByBookInfo(@Param("bookInfo") BookInfo bookInfo);
+
+    void insertByBookDetailAndCnt(@Param("bookDetail") BookDetail bookDetail);
 }

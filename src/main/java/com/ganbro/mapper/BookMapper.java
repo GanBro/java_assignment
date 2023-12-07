@@ -1,5 +1,6 @@
 package com.ganbro.mapper;
 
+import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
 import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.*;
@@ -29,9 +30,23 @@ public interface BookMapper {
     @Delete("delete from book_info where book_info_id = #{bookId}")
     void deleteById(Integer bookId);
 
-    @Update("UPDATE book_info SET book_name = #{bookName}, publisher = #{publisher}, " +
-            "publish_date = #{publishDate}, total_inventory = #{totalInventory}" +
-            " WHERE book_info_id = #{bookInfoId}")
-    int updateByBookInfo(BookInfo bookInfo);
+    int updateByBookInfo(@Param("bookInfo") BookInfo bookInfo, @Param("sub") int sub);
 
+    @Insert("INSERT INTO book_details (book_name, publisher, publish_date, is_borrowed) " +
+            "VALUES (#{bookName}, #{publisher}, #{publishDate}, #{isBorrowed})")
+    void insertByBookDetail(BookDetail bookDetail);
+
+    List<BookInfo> selectByBookNameAndPublisher(@Param("bookName") String bookName, @Param("publisher") String publisher);
+
+    // 查询bookDetail的id
+    Integer selectBookInfoIdByBookNameAndPublisher(@Param("bookName") String bookName, @Param("publisher") String publisher);
+
+    void addTotalInventoryById(@Param("id") int id, @Param("totalInventory") int totalInventory);
+
+    void insertByBookInfo(BookInfo bookInfo);
+
+    void addAvailableBooksById(@Param("id")Integer id, @Param("availableBooks")Integer availableBooks);
+
+    @Select("select total_inventory from book_info where book_info_id = #{id}")
+    int selectTotalInventoryById(Long bookInfoId);
 }

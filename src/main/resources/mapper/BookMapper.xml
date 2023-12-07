@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ganbro.mapper.BookMapper">
+
+    <select id="selectByBookNameAndPublisher" parameterType="map" resultType="com.ganbro.domain.entity.BookInfo">
+        SELECT * FROM book_info WHERE book_name = #{bookName} AND publisher = #{publisher}
+    </select>
+
+    <select id="selectBookInfoIdByBookNameAndPublisher" parameterType="map" resultType="int">
+        SELECT book_info_id FROM book_info WHERE book_name = #{bookName} AND publisher = #{publisher}
+    </select>
+
+    <update id="addTotalInventoryById">
+        UPDATE book_info SET total_inventory = total_inventory + #{totalInventory} WHERE book_info_id = #{id}
+    </update>
+
+    <update id="addAvailableBooksById">
+        UPDATE book_info SET available_books = available_books + #{availableBooks} WHERE book_info_id = #{id}
+    </update>
+
+    <insert id="insertByBookInfo" parameterType="com.ganbro.domain.entity.BookInfo">
+        INSERT INTO book_info(book_name, publisher, publish_date, total_inventory, available_books)
+        VALUES(#{bookName}, #{publisher}, #{publishDate}, #{totalInventory}, #{availableBooks})
+    </insert>
+
+    <update id="updateByBookInfo" parameterType="com.ganbro.domain.entity.BookInfo">
+        UPDATE book_info
+        SET book_name = #{bookInfo.bookName},
+            publisher = #{bookInfo.publisher},
+            publish_date = #{bookInfo.publishDate},
+            total_inventory = #{bookInfo.totalInventory},
+            available_books = CASE WHEN (available_books - #{sub}) > 0 THEN (available_books - #{sub}) ELSE 0 END
+        WHERE book_info_id = #{bookInfo.bookInfoId}
+    </update>
+
+</mapper>

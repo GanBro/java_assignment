@@ -22,15 +22,7 @@ import java.util.List;
 public class BookController {
 
     private final BookService bookService;
-
-    // 搜索图书信息
-//    @GetMapping("/search")
-//    public Result<List<BookInfo>> searchBooks(@RequestParam String query) {
-//        List<BookInfo> books = bookService.searchBooks(query);
-//        return Result.success(books);
-//    }
-
-    // 分页搜索图书信息
+/*    // 分页搜索图书信息
     @GetMapping("/searchByPage")
     @ApiOperation(value = "分页搜索图书信息")
     public Result<PageData<BookInfo>> searchBooksByPage(String query, int pageNum, int pageSize) {
@@ -43,11 +35,25 @@ public class BookController {
         pageData.setList(books);
 //        log.error(String.valueOf(pageData));
         return Result.success(pageData);
-    }
+    }*/
+// 分页搜索图书信息
+@GetMapping("/searchByPage")
+@ApiOperation(value = "分页搜索图书信息")
+public Result<PageData<BookInfo>> searchBooksByPage(String query, int pageNum, int pageSize) {
+    List<BookInfo> books = bookService.searchBooksByPage(query, pageNum, pageSize);
+    int total = bookService.getBooksCountByQuery(query); // 获取总记录数
+    PageData<BookInfo> pageData = new PageData<>();
+    pageData.setTotalItems(total);
+    pageData.setPageSize(pageSize);
+    pageData.setCurrentPage(pageNum);
+    pageData.setList(books);
+//        log.error(String.valueOf(pageData));
+    return Result.success(pageData);
+}
 
 
     // 添加图书信息
-    @PostMapping
+/*    @PostMapping
     @ApiOperation(value = "添加图书信息")
     public Result<Void> addBook(@RequestBody BookInfo bookInfo) {
         // 调用 BookService 中的方法实现添加图书的逻辑
@@ -58,6 +64,22 @@ public class BookController {
         }
 
         return Result.success(null, "添加成功");
+    }*/
+
+/*    // 添加图书信息
+    @PostMapping
+    @ApiOperation(value = "添加图书信息")
+    public Result<Void> addBook(@RequestBody BookDetail bookDetail) {
+        bookService.insertByBookDetail(bookDetail);
+        return Result.success(null,"添加成功");
+    }*/
+
+    // 添加图书信息
+    @PostMapping
+    @ApiOperation(value = "添加图书信息")
+    public Result<Void> addBook(@RequestBody BookInfo bookInfo) {
+        bookService.insertByBookBookInfo(bookInfo);
+        return Result.success(null,"添加成功");
     }
 
     // 修改图书信息

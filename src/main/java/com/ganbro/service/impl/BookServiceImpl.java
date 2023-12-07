@@ -1,17 +1,21 @@
 package com.ganbro.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
 import com.ganbro.mapper.BookMapper;
 import com.ganbro.service.BookService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookServiceImpl implements BookService {
     private final BookMapper bookMapper;
     @Override
@@ -52,7 +56,56 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public boolean updateByBookInfo(BookInfo bookInfo) {
-        int cnt = bookMapper.updateByBookInfo(bookInfo);
+        int sub = bookMapper.selectTotalInventoryById(bookInfo.getBookInfoId()) - bookInfo.getTotalInventory();
+        log.error(String.valueOf(bookInfo));
+        log.error(String.valueOf(sub));
+        int cnt = bookMapper.updateByBookInfo(bookInfo, sub);
         return cnt > 0;
     }
+/*    @Override
+    public void insertByBookDetail(BookDetail bookDetail) {
+        bookDetail.setIsBorrowed(false); // 默认没借出去
+        // 1. 判断书是否存在
+        List<BookInfo> bookInfos= bookMapper.selectByBookNameAndPublisher(bookDetail.getBookName(), bookDetail.getPublisher());
+        log.error(bookInfos.toString());
+        if (!bookInfos.isEmpty()) { // 不为空
+            Integer id = bookMapper.selectBookInfoIdByBookNameAndPublisher(bookDetail.getBookName(), bookDetail.getPublisher());
+            bookMapper.addTotalInventoryById(id);
+        } else {
+            // 1. 详细表插入
+            bookMapper.insertByBookDetail(bookDetail);
+            // 2. 新增book_info信息
+            BookInfo bookInfo = new BookInfo();
+            BeanUtil.copyProperties(bookDetail, bookInfo);
+            bookInfo.setAvailableBooks(bookInfo.getTotalInventory());
+            bookMapper.insertByBookInfo(bookInfo);
+        }
+    }*/
+
+    @Override
+    public void insertByBookBookInfo(BookInfo bookInfo) {
+        // 默认可借阅数量为库存
+        bookInfo.setAvailableBooks(bookInfo.getTotalInventory());
+        BookDetail bookDetail = new BookDetail();
+        BeanUtil.copyProperties(bookInfo, bookDetail);
+        bookDetail.setIsBorrowed(false); // 默认没借出去
+        // 1. 判断书是否存在
+        List<BookInfo> bookInfos= bookMapper.selectByBookNameAndPublisher(bookDetail.getBookName(), bookDetail.getPublisher());
+        log.error(bookInfos.toString());
+        if (!bookInfos.isEmpty()) { // 不为空
+            Integer id = bookMapper.selectBookInfoIdByBookNameAndPublisher(bookDetail.getBookName(), bookDetail.getPublisher());
+            // 增加库存数量
+            bookMapper.addTotalInventoryById(id, bookInfo.getTotalInventory());
+            // 增加可借阅数量
+            log.info(String.valueOf(bookInfo.getAvailableBooks()));
+            bookMapper.addAvailableBooksById(id, bookInfo.getAvailableBooks());
+        } else {
+            // 1. 详细表插入
+            bookMapper.insertByBookDetail(bookDetail);
+            // 2. 新增book_info信息
+            bookInfo.setAvailableBooks(bookInfo.getTotalInventory());
+            bookMapper.insertByBookInfo(bookInfo);
+        }
+    }
+
 }

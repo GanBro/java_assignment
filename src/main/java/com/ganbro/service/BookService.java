@@ -1,5 +1,6 @@
 package com.ganbro.service;
 
+import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Service;
@@ -20,4 +21,6 @@ public interface BookService {
     void deleteById(Integer bookId);
 
     boolean updateByBookInfo(BookInfo bookInfo);
+
+    void insertByBookBookInfo(BookInfo bookInfo);
 }

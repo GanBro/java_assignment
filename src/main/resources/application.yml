@@ -7,10 +7,11 @@ spring:
     username: root
     password: root
 mybatis:
-  mapper-locations: classpath:/com/ganbro/mapper/*.xml
+#  mapper-locations: classpath:/com/ganbro/mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true
     use-generated-keys: true
+  mapper-locations: classpath:mapper/*.xml # 不写报错
 logging:
   level:
     com.ganbro.mapper: debug

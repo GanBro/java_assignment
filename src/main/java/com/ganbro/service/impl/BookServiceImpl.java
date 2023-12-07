@@ -153,5 +153,10 @@ public class BookServiceImpl implements BookService {
         }
     }
 
+    @Override
+    public void deleteDetailBookById(Integer bookId) {
+        bookMapper.deleteDetailBookById(bookId);
+    }
+
 
 }

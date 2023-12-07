@@ -232,17 +232,15 @@
             /*图书详情分页处理*/
             detailHandleCurrentChange(page) {
                 this.currentPage = page;
-
-
             },
-            deleteBook(bookInfo) {
+            deleteBook(bookDetail) {
                 this.$confirm('确定要删除该图书吗？', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
                     // 发起删除图书的请求
-                    axios.delete(`http://localhost:8080/api/books/${bookInfo.bookInfoId}`)
+                    axios.delete(`http://localhost:8080/api/books/${bookDetail.bookId}`)
                         .then(response => {
                             const result = response.data;
                             if (result.code === 0) {
@@ -342,6 +340,34 @@
                 // 在跳转时将数据作为参数传递
                 window.location.href = 'editPage.html?data=' + encodeURIComponent(JSON.stringify(bookDetail));
             },
+            handleDelete(bookDetail) {
+                this.$confirm('确定要删除该图书吗？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    // 发起删除图书的请求
+                    axios.delete(`http://localhost:8080/api/books/detail/${bookDetail.bookId}`)
+                        .then(response => {
+                            const result = response.data;
+                            if (result.code === 0) {
+                                this.$message.success('删除图书成功');
+                                // 删除成功后重新加载图书列表
+                                this.searchBooks(this.currentPage, this.pageSize);
+                                // 关闭抽屉
+                                this.detailDrawer = false;
+                            } else {
+                                this.$message.error('删除图书失败：' + result.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('删除图书时出错：', error);
+                        });
+                }).catch(() => {
+                    // 取消删除操作
+                });
+            }
+
         },
         mounted() {
             this.formData = {};

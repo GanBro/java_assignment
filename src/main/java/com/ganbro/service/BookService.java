@@ -32,4 +32,6 @@ public interface BookService {
     boolean updateByBookDetail(BookDetail bookDetail);
 
     void updateBookInfoStockAndAvailabelBooks();
+
+    void deleteDetailBookById(Integer bookId);
 }

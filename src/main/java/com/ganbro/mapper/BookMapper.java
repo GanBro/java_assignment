@@ -72,4 +72,7 @@ public interface BookMapper {
 
     @Update("update book_info set available_books = #{size} where book_info_id = #{bookInfoId}")
     void updateAvailableBooks(int size, Integer bookInfoId);
+
+    @Delete("delete from book_details where book_id = #{bookId}")
+    void deleteDetailBookById(Integer bookId);
 }

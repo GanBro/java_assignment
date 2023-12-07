@@ -69,7 +69,6 @@ public class BookController {
         }
     }
 
-    // 删除图书信息
     @DeleteMapping("/{bookId}")
     @ApiOperation(value = "删除图书信息")
     public Result<Void> deleteBook(@PathVariable("bookId") Integer bookInfoId) {
@@ -77,6 +76,13 @@ public class BookController {
         bookService.deleteBookDetailsByBookId(bookInfoId);
         bookService.deleteById(bookInfoId);
         return Result.success(null, "删除图书" + name + "成功");
+    }
+
+    @DeleteMapping("/detail/{bookId}")
+    @ApiOperation(value = "删除详细图书")
+    public Result<Void> deleteDetailBook(@PathVariable Integer bookId) {
+        bookService.deleteDetailBookById(bookId);
+        return Result.success(null);
     }
 
     // 获取图书详细信息

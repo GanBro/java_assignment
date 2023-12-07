@@ -233,14 +233,14 @@
             detailHandleCurrentChange(page) {
                 this.currentPage = page;
             },
-            deleteBook(bookDetail) {
+            deleteBook(bookInfo) {
                 this.$confirm('确定要删除该图书吗？', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
                     // 发起删除图书的请求
-                    axios.delete(`http://localhost:8080/api/books/${bookDetail.bookId}`)
+                    axios.delete(`http://localhost:8080/api/books/${bookInfo.bookInfoId}`)
                         .then(response => {
                             const result = response.data;
                             if (result.code === 0) {

@@ -1,4 +1,4 @@
-package com.ganbro.domain.entity;
+package com.ganbro.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class UserDto {
     private String username;
     private String password;
-    private Integer userId;
     private Integer isAdmin;
 }

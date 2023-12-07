@@ -9,6 +9,9 @@
     <select id="selectBookInfoIdByBookNameAndPublisher" parameterType="map" resultType="int">
         SELECT book_info_id FROM book_info WHERE book_name = #{bookName} AND publisher = #{publisher}
     </select>
+    <select id="selectBookDetailByBookInfo" resultType="com.ganbro.domain.entity.BookDetail">
+        select * from book_details where book_name = #{bookInfo.bookName} and publisher = #{bookInfo.publisher}
+    </select>
 
     <update id="addTotalInventoryById">
         UPDATE book_info SET total_inventory = total_inventory + #{totalInventory} WHERE book_info_id = #{id}

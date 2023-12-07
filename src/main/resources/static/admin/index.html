@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图书馆管理系统用户登录</title>
+    <title>图书馆管理管理后台</title>
     <!-- 引入Vue.js和Element UI的CDN链接 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 </head>
@@ -15,7 +15,7 @@
         <el-header>
             <el-row type="flex" justify="center">
                 <el-col :span="12">
-                    <h1 class="display-4">图书馆管理系统用户登录</h1>
+                    <h1 class="display-4">图书馆管理管理后台</h1>
                 </el-col>
             </el-row>
         </el-header>
@@ -58,7 +58,7 @@
             return {
                 loginForm: {
                     username: '',
-                    password: '',
+                    password: ''
                 }
             };
         },
@@ -70,12 +70,11 @@
                         // 登录成功的处理逻辑
                         const result = response.data;
                         if (result.code === 0) {
-                            // console.log('登录成功', result.message);
                             this.$message({
                                 message: '登录成功',
                                 type: 'success'
                             });
-                            window.location.href = 'show.html';
+                            window.location.href = 'show.html'; // 用户界面
 
                         } else {
                             this.$message({

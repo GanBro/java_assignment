@@ -49,4 +49,12 @@ public interface BookMapper {
 
     @Select("select total_inventory from book_info where book_info_id = #{id}")
     int selectTotalInventoryById(Long bookInfoId);
+
+    @Select("select * from book_details where book_id = #{id}")
+    BookDetail selectBookDetailById(Integer bookId);
+
+    List<BookDetail> selectBookDetailByBookInfo(@Param("bookInfo") BookInfo bookInfo);
+
+    @Select("select * from book_info where book_info_id = #{bookInfoId}")
+    BookInfo selectBookInfoById(Integer bookInfoId);
 }

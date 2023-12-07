@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书搜索</title>
+    <!-- 引入Vue.js和Element UI的CDN链接 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        .custom-drawer {
+            height: 1500px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row :gutter="20">
+                <el-col :span="12">
+                    <el-input
+                            v-model="searchKeyword"
+                            placeholder="请输入关键字"
+                            prefix-icon="el-icon-search">
+                    </el-input>
+                </el-col>
+                <el-col :span="6">
+                    <el-button @click="searchBooks(currentPage, pageSize)" type="primary" icon="el-icon-search">搜索</el-button>
+                </el-col>
+                <el-col :span="6">
+                    <el-button @click="addBook" type="success" icon="el-icon-plus">新增</el-button>
+                </el-col>
+            </el-row>
+            <el-table :data="pagedBookList" style="width: 100%; margin-top: 20px;">
+                <el-table-column prop="bookInfoId" label="书本ID"></el-table-column>
+                <el-table-column prop="bookName" label="书本名称"></el-table-column>
+                <el-table-column prop="publisher" label="出版社"></el-table-column>
+                <el-table-column prop="publishDate" label="出版时间"></el-table-column>
+                <el-table-column prop="totalInventory" label="图书库存"></el-table-column>
+                <el-table-column prop="availableBooks" label="可借阅数量"></el-table-column>
+                <el-table-column label="操作">
+                    <template slot-scope="scope">
+                        <!--scope.row是当前行数据-->
+                        <el-button @click="showBookDetails(scope.row)" type="text" icon="el-icon-view"></el-button>
+                        <el-button @click="deleteBook(scope.row)" type="text" icon="el-icon-delete" class="text-danger"></el-button>
+                        <el-button @click="editBook(scope.row)" type="text" icon="el-icon-edit" class="text-warning"></el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--@current-change="handleCurrentChange"  点击分页数字时调用的方法-->
+            <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="currentPage"
+                    :page-size="pageSize"
+                    :total="totalItems"
+                    layout="total, prev, pager, next"
+                    style="margin-top: 20px;"
+            ></el-pagination>
+
+        </el-main>
+    </el-container>
+
+
+
+    <!-- 新增图书的抽屉 -->
+    <el-drawer
+            title="新增图书"
+            :visible.sync="drawer"
+            :direction="direction"
+            :before-close="detailHandleClose"
+            class="custom-drawer"
+    >
+        <el-form ref="bookForm" :model="formData" label-width="100px">
+            <el-form-item label="书本名称">
+                <el-input v-model="formData.bookName"></el-input>
+            </el-form-item>
+            <el-form-item label="出版社">
+                <el-input v-model="formData.publisher"></el-input>
+            </el-form-item>
+            <el-form-item label="出版时间">
+                <!-- 修改这里，使用 el-date-picker 来选择日期 -->
+                <el-date-picker v-model="formData.publishDate" type="date" placeholder="选择出版时间"></el-date-picker>
+            </el-form-item>
+            <el-form-item label="图书库存">
+                <el-input v-model="formData.totalInventory"></el-input>
+            </el-form-item>
+<!--            <el-form-item label="可借阅数量">-->
+<!--                <el-input v-model="formData.availableBooks"></el-input>-->
+<!--            </el-form-item>-->
+            <!-- 其他表单项... -->
+            <el-form-item>
+<!--                <el-button type="primary" @click="saveBook">保存</el-button>-->
+                <el-button type="primary" @click="handleSave">保存</el-button>
+                <el-button @click="cancelAdd">取消</el-button>
+            </el-form-item>
+        </el-form>
+    </el-drawer>
+
+    <!-- 图书详情的抽屉 -->
+    <el-drawer
+            title="图书详情"
+            :visible.sync="detailDrawer"
+            :direction="direction"
+            :before-close="handleClose"
+            class="custom-drawer"
+    >
+        <el-table :data="detailFormData">
+            <el-table-column label="书本ID" prop="bookId">
+            </el-table-column>
+            <el-table-column label="书本名称" prop="bookName"></el-table-column>
+            <el-table-column label="出版社" prop="publisher"></el-table-column>
+            <el-table-column label="出版时间" prop="publishDate"></el-table-column>
+            <el-table-column label="是否已被借阅">
+                <template slot-scope="scope">
+                    {{ scope.row.isBorrowed ? '是' : '否' }}
+                </template>
+            </el-table-column>
+            <el-table-column label="借阅人ID" prop="userId">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.userId !== null">{{ scope.row.userId }}</span>
+                    <span v-else>null</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="开始时间" prop="startDate">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.startDate !== null">{{ scope.row.startDate }}</span>
+                    <span v-else>null</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="逾期时间" prop="dueDate">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.dueDate !== null">{{ scope.row.dueDate }}</span>
+                    <span v-else>null</span>
+                </template>
+            </el-table-column>
+        </el-table>
+    </el-drawer>
+
+
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- 引入 Axios -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!--日期格式化处理-->
+<script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+<script>
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                searchKeyword: '',
+                pagedBookList: [],   // 当前页面显示的图书列表
+                totalItems: 0,       // 图书总数
+                currentPage: 1,      // 当前页数
+                pageSize: 5,        // 每页显示的数量
+                drawer: false,       // 控制抽屉显示/隐藏的变量
+                direction: 'ttb',    // 设置抽屉从上到下开
+                formData: {},         // 用于存储新增图书的表单数据
+                flag: 0,               // 0新增1编辑
+                detailDrawer: false,  // 图书详情抽屉
+                detailFormData: {}    // 用于显示图书详情的表单数据
+            };
+        },
+        methods: {
+            // 修改 searchBooks 方法
+            searchBooks(currentPage, pageSize) {
+                axios.get(`http://localhost:8080/api/books/searchByPage?query=${this.searchKeyword}&pageNum=${currentPage}&pageSize=${pageSize}`)
+                    .then(response => {
+                        const result = response.data;
+                        if (result.code === 0) {
+                            // 框架自动写了，不用自己算索引
+                            // const startIndex = (currentPage - 1) * pageSize; // 计算起始索引
+                            // const endIndex = Math.min(startIndex + pageSize, result.data.totalItems); // 计算结束索引，并确保不超过数据列表长度
+                            // this.pagedBookList = result.data.list.slice(startIndex, endIndex); // 获取指定范围的数据
+                            this.pagedBookList = result.data.list
+                            // console.log(JSON.stringify(this.pagedBookList));
+                            this.totalItems = result.data.totalItems; // 获取 totalItems 字段的值
+                            this.currentPage = result.data.currentPage; // 访问页
+                            this.pageSize = result.data.pageSize; // 每页大小
+                        } else {
+                            this.$message.error('搜索图书失败：' + result.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('搜索图书时出错：', error);
+                    });
+            },
+
+            showBookDetails(bookDetail) {
+                // 跳转到书本详细信息页面...
+                this.detailDrawer = true
+                // detailDrawer回显
+                axios.get(`http://localhost:8080/api/books/${bookDetail.bookInfoId}/details`)
+                    .then(response => {
+                        const result = response.data;
+                        if (result.code === 0 && result.data) {
+                            // 如果数据存在，再进行赋值操作
+                            this.detailFormData = result.data
+                            console.log(this.detailFormData)
+                        } else {
+                            this.$message.error('显示图书详情失败：' + result.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('显示图书详情时出错：', error);
+                    });
+
+            },
+            deleteBook(bookInfo) {
+                this.$confirm('确定要删除该图书吗？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    // 发起删除图书的请求
+                    axios.delete(`http://localhost:8080/api/books/${bookInfo.bookInfoId}`)
+                        .then(response => {
+                            const result = response.data;
+                            if (result.code === 0) {
+                                this.$message.success('删除图书成功');
+                                // 删除成功后重新加载图书列表
+                                this.searchBooks(this.currentPage, this.pageSize);
+                            } else {
+                                this.$message.error('删除图书失败：' + result.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('删除图书时出错：', error);
+                        });
+                }).catch(() => {
+                    // 取消删除操作
+                });
+            },
+            editBook(bookInfo) {
+                // 在这里实现编辑图书的逻辑...
+                this.drawer = true
+                this.formData = bookInfo
+                this.flag = 1 // 编辑框
+            },
+            addBook() {
+                // 打开抽屉并清空表单数据
+                this.drawer = true;
+                this.formData = {};
+            },
+            handleClose(done) {
+                // 可以在这里添加确认关闭的逻辑...
+                done();
+            },
+            detailHandleClose(done) {
+                done();
+            },
+            <!--@current-change="handleCurrentChange"  点击分页数字时调用的方法-->
+            handleCurrentChange(page) {
+                this.currentPage = page;
+                this.searchBooks(this.currentPage, this.pageSize);  // 调用搜索方法更新数据
+            },
+            // 0新增，1修改
+            saveBook() {
+                // 调用后端API保存图书数据
+                if (this.flag === 0) {
+                    this.formData.publishDate = moment(this.formData.publishDate).format('YYYY-MM-DD')
+                    // console.log(this.formData)
+                    axios.post('http://localhost:8080/api/books', this.formData)
+                        .then(response => {
+                            const result = response.data;
+                            if (result.code === 0) {
+                                this.drawer = false; // 关闭抽屉
+                                this.searchBooks(this.currentPage, this.pageSize);  // 刷新图书列表
+                                this.$message.success('新增图书成功');
+                            } else {
+                                this.$message.error('新增图书失败：' + result.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('新增图书时出错：', error);
+                        });
+                } else if (this.flag === 1) {
+                    this.flag = 0
+                    // this.formData.publishDate = moment(this.formData.publishDate).format('YYYY-MM-DD')
+                    // 编辑的日期是正常的不用改
+                    axios.put('http://localhost:8080/api/books', this.formData)
+                        .then(response => {
+                            const result = response.data;
+                            if (result.code === 0) {
+
+                                this.drawer = false; // 关闭抽屉
+                                this.searchBooks(this.currentPage, this.pageSize);  // 刷新图书列表
+                                this.$message.success('保存图书成功');
+                            } else {
+                                this.$message.error('保存图书失败：' + result.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('保存图书时出错：', error);
+                        });
+                }
+            },
+            cancelAdd() {
+                // 关闭抽屉并清空表单数据
+                this.drawer = false;
+                this.formData = {};
+            },
+            handleSave() {
+                console.log("执行")
+                this.saveBook();
+                // if (this.flag === 0) {
+                //     this.saveBook();
+                // } else {
+                //     this.editBook(this.formData);
+                // }
+            }
+
+        },
+        mounted() {
+            this.formData = {};
+            this.searchBooks(this.currentPage, this.pageSize);
+        }
+    });
+</script>
+
+</body>
+</html>

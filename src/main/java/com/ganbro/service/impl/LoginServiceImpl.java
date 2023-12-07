@@ -10,9 +10,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LoginServiceImpl implements LoginService {
     private final LoginMapper loginMapper;
+
     @Override
-    public boolean findByUsernameAndPassword(String username, String password) {
-        User user = loginMapper.findByUsernameAndPassword(username, password);
-        return !(user == null);
+    public String findPasswordByUsername(String username) {
+        return loginMapper.findPasswordByUsername(username);
+    }
+
+    @Override
+    public int findIsAdminByUsername(String username) {
+        return loginMapper.findIsAdminByUsername(username);
     }
 }

@@ -2,6 +2,7 @@ package com.ganbro.service;
 
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Service;
 
@@ -23,4 +24,6 @@ public interface BookService {
     boolean updateByBookInfo(BookInfo bookInfo);
 
     void insertByBookBookInfo(BookInfo bookInfo);
+
+    List<BookDetail> selectBookDetailByBookInfo(Integer bookInfoId);
 }

@@ -1,5 +1,8 @@
 package com.ganbro.service;
 
 public interface LoginService {
-    boolean findByUsernameAndPassword(String username, String password);
+
+    String findPasswordByUsername(String username);
+
+    int findIsAdminByUsername(String username);
 }

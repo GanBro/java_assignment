@@ -135,6 +135,15 @@
                 </template>
             </el-table-column>
         </el-table>
+        <!--图书详情分页-->
+        <el-pagination
+                @current-change="detailHandleCurrentChange"
+                :current-page.sync="currentPageDetail"
+                :page-size="pageSizeDetail"
+                :page-sizes="[10, 20, 30, 40]"
+                layout="total, prev, pager, next"
+                :total="detailFormData.length"
+        ></el-pagination>
     </el-drawer>
 
 
@@ -157,13 +166,15 @@
                 pagedBookList: [],   // 当前页面显示的图书列表
                 totalItems: 0,       // 图书总数
                 currentPage: 1,      // 当前页数
-                pageSize: 5,        // 每页显示的数量
+                currentPageDetail: 1,  // 详细信息当前页数
+                pageSizeDetail: 5,  // 每页显示的详细信息数量
+                pageSize: 3,        // 每页显示的数量
                 drawer: false,       // 控制抽屉显示/隐藏的变量
                 direction: 'ttb',    // 设置抽屉从上到下开
                 formData: {},         // 用于存储新增图书的表单数据
                 flag: 0,               // 0新增1编辑
                 detailDrawer: false,  // 图书详情抽屉
-                detailFormData: {}    // 用于显示图书详情的表单数据
+                detailFormData: {},    // 用于显示图书详情的表单数据
             };
         },
         methods: {
@@ -209,6 +220,12 @@
                     .catch(error => {
                         console.error('显示图书详情时出错：', error);
                     });
+
+            },
+            /*图书详情分页处理*/
+            detailHandleCurrentChange(page) {
+                this.currentPage = page;
+
 
             },
             deleteBook(bookInfo) {
@@ -313,13 +330,20 @@
                 // } else {
                 //     this.editBook(this.formData);
                 // }
-            }
-
+            },
         },
         mounted() {
             this.formData = {};
             this.searchBooks(this.currentPage, this.pageSize);
+        },
+        computed: {
+            pagedDetailFormData() {
+                const startIndex = (this.currentPage - 1) * this.pageSizeDetail;
+                const endIndex = startIndex + this.pageSizeDetail;
+                return this.detailFormData.slice(startIndex, endIndex);
+            }
         }
+
     });
 </script>
 

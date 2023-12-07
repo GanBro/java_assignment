@@ -129,7 +129,13 @@ public class BookServiceImpl implements BookService {
                 bookDetail1.getPublisher().equals(bookDetail.getPublisher())) {
             // 不用管
         } else {
-
+            BookInfo bookInfo = new BookInfo();
+            bookInfo.setBookName(bookDetail.getBookName());
+            bookInfo.setPublisher(bookDetail.getPublisher());
+            bookInfo.setPublishDate(bookDetail.getPublishDate());
+            bookInfo.setBookInfoId(1);
+            bookInfo.setAvailableBooks(1);
+            bookMapper.insertByBookInfo(bookInfo);
         }
         int cnt = bookMapper.updateByBookDetail(bookDetail);
         return cnt > 0;

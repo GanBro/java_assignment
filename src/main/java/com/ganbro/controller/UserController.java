@@ -1,27 +1,27 @@
-//package com.ganbro.controller;
-//
-//import com.ganbro.domain.common.Result;
-//import com.ganbro.domain.entity.Borrower;
-//import com.ganbro.service.BorrowerService;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.util.List;
-//
-//@RestController
-//@RequestMapping("/api/borrowers")
-//@RequiredArgsConstructor
-//public class BorrowerController {
-//
-//    private final BorrowerService borrowerService;
-//
-//    // 获取所有借阅人员信息
-//    @GetMapping
-//    public Result<List<Borrower>> getAllBorrowers() {
-//        List<Borrower> borrowers = borrowerService.getAllBorrowers();
-//        return Result.success(borrowers);
-//    }
-//
+package com.ganbro.controller;
+
+import com.ganbro.domain.common.PageData;
+import com.ganbro.domain.common.Result;
+import com.ganbro.domain.entity.User;
+import com.ganbro.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/users")
+@RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:63342")
+public class UserController {
+
+    private final UserService userService;
+
+    @GetMapping("/searchByPage")
+    public Result<PageData<User>> searchUsersByPage(@RequestParam("query") String query,
+                                                    @RequestParam("pageNum") int pageNum,
+                                                    @RequestParam("pageSize") int pageSize) {
+        PageData<User> pageData = userService.searchUsersByPage(query, pageNum, pageSize);
+        return Result.success(pageData);
+    }
 //    // 获取借阅人员详细信息
 //    @GetMapping("/{borrowerId}")
 //    public Result<Borrower> getBorrowerDetails(@PathVariable Long borrowerId) {
@@ -49,4 +49,4 @@
 //        borrowerService.deleteBorrower(borrowerId);
 //        return Result.success(null);
 //    }
-//}
+}

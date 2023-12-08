@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户管理</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        .custom-drawer {
+            height: 2200px;
+        }
+        .custom-drawer .el-form {
+            padding-left: 20px; /* 将抽屉内的表单内容向右移动 */
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row :gutter="20">
+                <el-col :span="12">
+                    <el-input
+                            v-model="searchKeyword"
+                            placeholder="请输入关键字"
+                            prefix-icon="el-icon-search">
+                    </el-input>
+                </el-col>
+                <el-col :span="6">
+                    <el-button @click="searchUsers(currentPage, pageSize)" type="primary" icon="el-icon-search">搜索</el-button>
+                </el-col>
+            </el-row>
+            <el-table :data="pagedUserList" style="width: 100%; margin-top: 20px;">
+                <el-table-column prop="userId" label="用户ID"></el-table-column>
+                <el-table-column prop="username" label="用户名"></el-table-column>
+                <el-table-column prop="maxBooksAllowed" label="用户可借阅的书本数量"></el-table-column>
+                <el-table-column prop="borrowedBooks" label="已经借阅的书本数量"></el-table-column>
+                <el-table-column prop="isVip" label="是否为VIP"></el-table-column>
+                <el-table-column prop="overdueBooks" label="逾期未归还的图书数量"></el-table-column>
+                <el-table-column label="操作">
+                    <template slot-scope="scope">
+                        <!--scope.row是当前行数据-->
+                        <el-button @click="deleteUser(scope.row)" type="text" icon="el-icon-delete" class="text-danger"></el-button>
+                        <el-button @click="editUser(scope.row)" type="text" icon="el-icon-edit" class="text-warning"></el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--@current-change="handleCurrentChange"  点击分页数字时调用的方法-->
+            <el-pagination
+                    @current-change="handleCurrentChange"
+                    :current-page="currentPage"
+                    :page-size="pageSize"
+                    :total="totalItems"
+                    layout="total, prev, pager, next"
+                    style="margin-top: 20px;"
+            ></el-pagination>
+
+        </el-main>
+    </el-container>
+
+    <!-- 新增和编辑用户的抽屉 -->
+    <el-drawer
+            title="新增用户"
+            :visible.sync="drawer"
+            :direction="direction"
+            :before-close="detailHandleClose"
+            class="custom-drawer"
+    >
+        <el-form ref="userForm" :model="formData" label-width="100px">
+            <el-form-item label="用户ID" prop="userId">
+                <el-input v-model="formData.userId" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="用户名" prop="username">
+                <el-input v-model="formData.username"></el-input>
+            </el-form-item>
+            <el-form-item label="用户可借阅的书本数量" prop="maxBooksAllowed">
+                <el-input v-model="formData.maxBooksAllowed"></el-input>
+            </el-form-item>
+            <el-form-item label="已经借阅的书本数量" prop="borrowedBooks">
+                <el-input v-model="formData.borrowedBooks"></el-input>
+            </el-form-item>
+            <el-form-item label="是否为VIP" prop="isVip">
+                <el-switch v-model="formData.isVip"></el-switch>
+            </el-form-item>
+            <el-form-item label="逾期未归还的图书数量" prop="overdueBooks">
+                <el-input v-model="formData.overdueBooks"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="handleSave">保存</el-button>
+                <el-button @click="cancelAdd">取消</el-button>
+            </el-form-item>
+        </el-form>
+
+    </el-drawer>
+
+    <!-- 用户详情的抽屉 -->
+    <el-drawer
+            title="用户详情"
+            :visible.sync="detailDrawer"
+            :direction="direction"
+            :before-close="handleClose"
+            class="custom-drawer"
+    >
+        <el-form ref="userDetailForm" :model="detailFormData" label-width="100px">
+            <el-form-item label="用户名">
+                <el-input v-model="detailFormData.username" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="邮箱">
+                <el-input v-model="detailFormData.email" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="电话">
+                <el-input v-model="detailFormData.phone" disabled></el-input>
+            </el-form-item>
+            <el-form-item label="性别">
+                <el-radio-group v-model="detailFormData.gender" disabled>
+                    <el-radio :label="1">男</el-radio>
+                    <el-radio :label="0">女</el-radio>
+                </el-radio-group>
+            </el-form-item>
+        </el-form>
+    </el-drawer>
+
+</div>
+
+<!-- 引入Vue.js和Element UI的CDN链接 -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+<script>
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                // 搜索关键字
+                searchKeyword: '',
+                // 用户列表
+                userList: [
+                    { userId: 1, username: '张三', email: 'zhangsan@example.com', phone: '123456789', gender: 1 },
+                    { userId: 2, username: '李四', email: 'lisi@example.com', phone: '987654321', gender: 0 },
+                    { userId: 3, username: '王五', email: 'wangwu@example.com', phone: '555555555', gender: 1 },
+                    { userId: 4, username: '赵六', email: 'zhaoliu@example.com', phone: '666666666', gender: 1 },
+                    { userId: 5, username: '小明', email: 'xiaoming@example.com', phone: '777777777', gender: 0 }
+                ],
+                // 分页相关数据
+                currentPage: 1,  /*搜索分页当前页*/
+                pageSize: 3,     /*搜索分页每页大小*/
+                totalItems: 5,
+                pagedUserList: [],
+                // 新增和编辑用户的抽屉相关数据
+                drawer: false,
+                direction: 'ttb',
+                formData: {
+                    username: '',
+                    password: '',
+                    confirmPassword: '',
+                    email: '',
+                    phone: '',
+                    gender: 1
+                },
+                // 用户详情的抽屉相关数据
+                detailDrawer: false,
+                detailFormData: {
+                    username: '',
+                    email: '',
+                    phone: '',
+                    gender: 1
+                }
+            };
+        },
+        methods: {
+            searchUsers(currentPage, pageSize) {
+                axios.get(`http://localhost:8080/api/users/searchByPage?query=${this.searchKeyword}&pageNum=${currentPage}&pageSize=${pageSize}`)
+                    .then(response => {
+                        const result = response.data;
+                        this.pagedUserList = result.data.list;
+                        this.totalItems = result.data.total;
+                        console.log(this.pagedUserList)
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            },
+            handleCurrentChange(currentPage) {
+                this.currentPage = currentPage;
+                this.searchUsers(currentPage, this.pageSize);
+            },
+            handleClose(done) {
+                this.detailDrawer = false;
+                done();
+            },
+            cancelAdd() {
+                this.drawer = false;
+                this.resetForm();
+            },
+            handleSave() {
+                // 这里可以根据formData进行保存逻辑
+                this.drawer = false;
+                this.resetForm();
+            },
+            resetForm() {
+                this.formData = {
+                    username: '',
+                    password: '',
+                    confirmPassword: '',
+                    email: '',
+                    phone: '',
+                    gender: 1
+                };
+            },
+            detailHandleClose(done) {
+                this.detailDrawer = false;
+                done();
+            },
+            deleteUser() {
+
+            },
+            editUser() {
+                this.drawer = true;
+            }
+        },
+        mounted() {
+            this.searchUsers(this.currentPage, this.pageSize);
+        }
+    });
+</script>
+
+</body>
+</html>

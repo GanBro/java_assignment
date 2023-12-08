@@ -16,6 +16,12 @@
 
 <div id="app">
     <el-container>
+        <!--用户管理界面-->
+        <el-header style="display: flex; justify-content: flex-end;">
+            <el-button type="text" @click="goToUserManagement">
+                <i class="el-icon-user" style="font-size: 40px;"></i>
+            </el-button>
+        </el-header>
         <el-main>
             <el-row :gutter="20">
                 <el-col :span="12">
@@ -366,6 +372,11 @@
                 }).catch(() => {
                     // 取消删除操作
                 });
+            },
+            /*跳转到用户管理界面*/
+            goToUserManagement() {
+                // 在这里实现跳转到用户管理页面的逻辑
+                window.location.href = 'userManagement.html';
             }
 
         },

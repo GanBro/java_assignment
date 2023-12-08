@@ -104,33 +104,6 @@
 
     </el-drawer>
 
-    <!-- 用户详情的抽屉 -->
-    <el-drawer
-            title="用户详情"
-            :visible.sync="detailDrawer"
-            :direction="direction"
-            :before-close="handleClose"
-            class="custom-drawer"
-    >
-        <el-form ref="userDetailForm" :model="detailFormData" label-width="100px">
-            <el-form-item label="用户名">
-                <el-input v-model="detailFormData.username" disabled></el-input>
-            </el-form-item>
-            <el-form-item label="邮箱">
-                <el-input v-model="detailFormData.email" disabled></el-input>
-            </el-form-item>
-            <el-form-item label="电话">
-                <el-input v-model="detailFormData.phone" disabled></el-input>
-            </el-form-item>
-            <el-form-item label="性别">
-                <el-radio-group v-model="detailFormData.gender" disabled>
-                    <el-radio :label="1">男</el-radio>
-                    <el-radio :label="0">女</el-radio>
-                </el-radio-group>
-            </el-form-item>
-        </el-form>
-    </el-drawer>
-
 </div>
 
 <!-- 引入Vue.js和Element UI的CDN链接 -->
@@ -154,7 +127,7 @@
                 ],
                 // 分页相关数据
                 currentPage: 1,  /*搜索分页当前页*/
-                pageSize: 3,     /*搜索分页每页大小*/
+                pageSize: 5,     /*搜索分页每页大小*/
                 totalItems: 5,
                 pagedUserList: [],
                 drawer: false, // 新增和编辑用户的抽屉相关数据
@@ -162,7 +135,8 @@
                 formData: {},
                 // 用户详情的抽屉相关数据
                 detailDrawer: false,
-                detailFormData: {}
+                detailFormData: {},
+                flag: 0       // 控制新增和修改, 0新增1修改
             };
         },
         methods: {
@@ -171,8 +145,8 @@
                     .then(response => {
                         const result = response.data;
                         this.pagedUserList = result.data.list;
-                        this.totalItems = result.data.total;
-                        console.log(this.pagedUserList)
+                        this.totalItems = result.data.totalItems;
+                        this.pageSize = result.data.pageSize;
                     })
                     .catch(error => {
                         console.log(error);
@@ -191,19 +165,30 @@
                 this.resetForm();
             },
             handleSave() {
-                // 这里可以根据formData进行保存逻辑
-                this.drawer = false;
-                this.resetForm();
-            },
-            resetForm() {
-                this.formData = {
-                    username: '',
-                    password: '',
-                    confirmPassword: '',
-                    email: '',
-                    phone: '',
-                    gender: 1
-                };
+                if (this.flag === 1) {
+                    axios.put(`http://localhost:8080/api/users`, this.formData)
+                        .then(response => {
+                            this.$message.success(response.data.message);
+                            this.searchUsers(this.currentPage, this.pageSize);
+                            this.drawer = false;
+                            this.formData = {};
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                } else if (this.flag === 0) {
+                    console.log(this.formData)
+                    axios.post(`http://localhost:8080/api/users`, this.formData)
+                        .then(response => {
+                            this.$message.success(response.data.message);
+                            this.searchUsers(this.currentPage, this.pageSize);
+                            this.drawer = false;
+                            this.formData = {};
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                }
             },
             detailHandleClose(done) {
                 this.detailDrawer = false;
@@ -229,9 +214,12 @@
                 });
             },
             editUser(userInfo) {
-                this.drawer = true;
+                this.flag = 1;
+                this.formData = { ...userInfo }; // 将要编辑的用户信息赋值给formData
+                this.drawer = true; // 打开新增和编辑用户的抽屉
             },
             addUser() {
+                this.flag = 0;
                 this.drawer = true;
                 this.formData = {};
             }

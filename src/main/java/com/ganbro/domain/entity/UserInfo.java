@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserInfo {
-    private Long userId;
+    private Integer userId;
     private String username;
     private Integer maxBooksAllowed;
     private Integer borrowedBooks;

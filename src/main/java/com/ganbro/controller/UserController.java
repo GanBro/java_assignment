@@ -2,6 +2,7 @@ package com.ganbro.controller;
 
 import com.ganbro.domain.common.PageData;
 import com.ganbro.domain.common.Result;
+import com.ganbro.domain.entity.BookInfo;
 import com.ganbro.domain.entity.User;
 import com.ganbro.domain.entity.UserInfo;
 import com.ganbro.service.UserService;
@@ -27,30 +28,22 @@ public class UserController {
         PageData<UserInfo> pageData = userService.searchUserInfoByPage(query, pageNum, pageSize);
         return Result.success(pageData);
     }
-//    // 获取借阅人员详细信息
-//    @GetMapping("/{borrowerId}")
-//    public Result<UserInfo> getBorrowerDetails(@PathVariable Long borrowerId) {
-//        UserInfo borrower = borrowerService.getBorrowerDetails(borrowerId);
-//        return Result.success(borrower);
-//    }
-//
-//    // 添加借阅人员信息
-//    @PostMapping
-//    public Result<Void> addBorrower(@RequestBody BorrowerRequest borrowerRequest) {
-//        borrowerService.addBorrower(borrowerRequest);
-//        return Result.success(null);
-//    }
-//
-//    // 修改借阅人员信息
-//    @PutMapping("/{borrowerId}")
-//    public Result<Void> updateBorrower(@PathVariable Long borrowerId, @RequestBody BorrowerRequest borrowerRequest) {
-//        borrowerService.updateBorrower(borrowerId, borrowerRequest);
-//        return Result.success(null);
-//    }
-//
-    // 删除借阅人员信息
+    @PostMapping()
+    @ApiOperation(value = "添加借阅人员信息")
+    public Result<Void> addUserInfo(@RequestBody UserInfo userInfo) {
+        userService.addUserInfo(userInfo);
+        return Result.success(null, "添加成功!");
+    }
+
+    @PutMapping()
+    @ApiOperation(value = "修改借阅人员信息")
+    public Result<Void> updateUserInfo(@RequestBody UserInfo userInfo) {
+        userService.updateUserInfo(userInfo);
+        return Result.success(null, "修改成功!");
+    }
+
     @DeleteMapping("/{userId}")
-    @ApiOperation(value = "删除用户信息")
+    @ApiOperation(value = "删除借阅人员信息")
     public Result<Void> deleteBorrower(@PathVariable Integer userId) {
         userService.deleteUserById(userId);
         return Result.success(null);

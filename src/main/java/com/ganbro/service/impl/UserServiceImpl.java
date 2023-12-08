@@ -9,6 +9,7 @@ import com.ganbro.service.UserService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,5 +40,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUserById(Integer userId) {
         userMapper.deleteUserById(userId);
+    }
+
+    @Override
+    public void updateUserInfo(UserInfo userInfo) {
+        userMapper.updateUsers(userInfo);
+        userMapper.updateUserInfo(userInfo);
+    }
+
+    @Override
+    public void addUserInfo(UserInfo userInfo) {
+        if (userInfo.getIsVip() == null) {
+            userInfo.setIsVip(false);
+        }
+        User user = new User();
+        user.setUsername(userInfo.getUsername());
+        user.setPassword(user.getUsername());
+        user.setIsAdmin(0); // 默认为普通用户
+        userMapper.insertUser(user);
+        Integer id = user.getUserId();
+        userInfo.setUserId(id);
+        userMapper.insertUserInfo(userInfo);
     }
 }

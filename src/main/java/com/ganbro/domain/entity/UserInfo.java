@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Borrower {
+public class UserInfo {
     private Long userId;
-    private String userName;
+    private String username;
     private Integer maxBooksAllowed;
     private Integer borrowedBooks;
     private Boolean isVip;

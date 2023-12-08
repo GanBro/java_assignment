@@ -32,13 +32,21 @@
                 <el-col :span="6">
                     <el-button @click="searchUsers(currentPage, pageSize)" type="primary" icon="el-icon-search">搜索</el-button>
                 </el-col>
+                <el-col :span="6">
+                    <el-button @click="addUser" type="success" icon="el-icon-plus">新增</el-button>
+                </el-col>
             </el-row>
             <el-table :data="pagedUserList" style="width: 100%; margin-top: 20px;">
                 <el-table-column prop="userId" label="用户ID"></el-table-column>
                 <el-table-column prop="username" label="用户名"></el-table-column>
                 <el-table-column prop="maxBooksAllowed" label="用户可借阅的书本数量"></el-table-column>
                 <el-table-column prop="borrowedBooks" label="已经借阅的书本数量"></el-table-column>
-                <el-table-column prop="isVip" label="是否为VIP"></el-table-column>
+<!--                <el-table-column prop="isVip" label="是否为VIP"></el-table-column>-->
+                <el-table-column prop="isVip" label="是否为VIP">
+                    <template slot-scope="{ row }">
+                        <el-switch v-model="row.isVip" :disabled="true"></el-switch>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="overdueBooks" label="逾期未归还的图书数量"></el-table-column>
                 <el-table-column label="操作">
                     <template slot-scope="scope">
@@ -149,25 +157,12 @@
                 pageSize: 3,     /*搜索分页每页大小*/
                 totalItems: 5,
                 pagedUserList: [],
-                // 新增和编辑用户的抽屉相关数据
-                drawer: false,
+                drawer: false, // 新增和编辑用户的抽屉相关数据
                 direction: 'ttb',
-                formData: {
-                    username: '',
-                    password: '',
-                    confirmPassword: '',
-                    email: '',
-                    phone: '',
-                    gender: 1
-                },
+                formData: {},
                 // 用户详情的抽屉相关数据
                 detailDrawer: false,
-                detailFormData: {
-                    username: '',
-                    email: '',
-                    phone: '',
-                    gender: 1
-                }
+                detailFormData: {}
             };
         },
         methods: {
@@ -214,11 +209,31 @@
                 this.detailDrawer = false;
                 done();
             },
-            deleteUser() {
-
+            deleteUser(userInfo) {
+                this.$confirm('确定要删除该用户吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios.delete(`http://localhost:8080/api/users/${userInfo.userId}`)
+                        .then(response => {
+                            // 删除成功后刷新用户列表并弹出提示框
+                            this.searchUsers(this.currentPage, this.pageSize);
+                            this.$message.success("删除成功!");
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                }).catch(() => {
+                    // 用户点击取消，不执行任何操作
+                });
             },
-            editUser() {
+            editUser(userInfo) {
                 this.drawer = true;
+            },
+            addUser() {
+                this.drawer = true;
+                this.formData = {};
             }
         },
         mounted() {

@@ -2,7 +2,10 @@ package com.ganbro.service;
 
 import com.ganbro.domain.common.PageData;
 import com.ganbro.domain.entity.User;
+import com.ganbro.domain.entity.UserInfo;
 
 public interface UserService {
-    PageData<User> searchUsersByPage(String query, int pageNum, int pageSize);
+    PageData<UserInfo> searchUserInfoByPage(String query, int pageNum, int pageSize);
+
+    void deleteUserById(Integer userId);
 }

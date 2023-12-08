@@ -75,7 +75,7 @@
                                 message: '登录成功',
                                 type: 'success'
                             });
-                            window.location.href = 'show.html';
+                            window.location.href = `show.html?username=${this.loginForm.username}`;
 
                         } else {
                             this.$message({

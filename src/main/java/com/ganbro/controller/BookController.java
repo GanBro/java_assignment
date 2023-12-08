@@ -85,8 +85,8 @@ public class BookController {
         return Result.success(null);
     }
 
-    // 获取图书详细信息
     @GetMapping("/{bookInfoId}/details")
+    @ApiOperation(value = "获取图书详细信息")
     public Result<List<BookDetail>> getBookDetails(@PathVariable Integer bookInfoId) {
         // 调用 BookService 中的方法获取图书详细信息
         List<BookDetail> bookDetails = bookService.selectBookDetailByBookInfo(bookInfoId);

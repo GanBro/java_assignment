@@ -22,36 +22,20 @@ public class LoginController {
 
     private final LoginService loginService;
 
-/*    @PostMapping("/login")
+    @PostMapping("/login")
     @ApiOperation(value = "用户登录")
-    public Result<String> login(@RequestBody Map<String, String> loginRequest) {
+    public Result<String> login(@RequestBody User user) {
         // 获取用户名和密码
-        String username = loginRequest.get("username");
-        String password = loginRequest.get("password");
-
-        boolean flag = loginService.findByUsernameAndPassword(username, password);
-
-        if (flag) {
-            return Result.success("登录成功");
-        } else {
+        String username = user.getUsername();
+        String password = loginService.findPasswordByUsername(username);
+        if (password == null) {
             return Result.error(401, "登录失败，用户名或密码错误");
         }
-
-    }*/
-@PostMapping("/login")
-@ApiOperation(value = "用户登录")
-public Result<String> login(@RequestBody User user) {
-    // 获取用户名和密码
-    String username = user.getUsername();
-    String password = loginService.findPasswordByUsername(username);
-    if (password == null) {
+        if (user.getPassword().equals(password)) {
+            return Result.success("登录成功");
+        }
         return Result.error(401, "登录失败，用户名或密码错误");
     }
-    if (user.getPassword().equals(password)) {
-        return Result.success("登录成功");
-    }
-    return Result.error(401, "登录失败，用户名或密码错误");
-}
 
     @PostMapping("/adminlogin")
     @ApiOperation(value = "管理员登录")

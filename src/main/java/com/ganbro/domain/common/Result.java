@@ -1,8 +1,10 @@
 package com.ganbro.domain.common;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 
 @Getter
+@ApiModel(value = "结果对象", description = "包含操作结果的代码、消息和数据")
 public class Result<T> {
     private int code;
     private String message;

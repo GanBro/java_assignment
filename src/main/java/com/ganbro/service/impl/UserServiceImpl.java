@@ -62,4 +62,9 @@ public class UserServiceImpl implements UserService {
         userInfo.setUserId(id);
         userMapper.insertUserInfo(userInfo);
     }
+
+    @Override
+    public UserInfo selectUserInfo(String username) {
+        return userMapper.selectUserInfo(username);
+    }
 }

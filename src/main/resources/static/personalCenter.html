@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Page</title>
+    <!-- 引入 Element UI 样式文件 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入 Vue 和 Element UI JavaScript 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+</head>
+<body>
+<div id="app">
+    <el-form :model="formData" label-width="100px" style="width: 50%;">
+        <el-form-item label="用户名">
+            <el-input v-model="formData.username" :readonly="true"></el-input>
+        </el-form-item>
+        <el-form-item label="用户可借阅的书本数量">
+            <el-input v-model="formData.maxBooksAllowed" :readonly="true"></el-input>
+        </el-form-item>
+        <el-form-item label="已经借阅的书本数量">
+            <el-input v-model="formData.borrowedBooks" :readonly="true"></el-input>
+        </el-form-item>
+        <el-form-item label="是否为VIP">
+            <el-switch v-model="formData.isVip" active-text="是" inactive-text="否" :disabled="true"></el-switch>
+        </el-form-item>
+        <el-form-item label="逾期未归还的图书数量">
+            <el-input v-model="formData.overdueBooks" :readonly="true"></el-input>
+        </el-form-item>
+    </el-form>
+
+</div>
+
+<script>
+    Vue.config.productionTip = false; // 设置 productionTip 为 false
+
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                formData: {}
+            };
+        },
+        created() {
+            this.initData();
+        },
+        methods: {
+            initData() {
+                // 获取查询字符串
+                const queryString = window.location.search;
+                // 创建 URLSearchParams 对象
+                const urlParams = new URLSearchParams(queryString);
+                const username = urlParams.get('username');
+                axios.get(`http://localhost:8080/api/users/${username}`)
+                    .then(response => {
+                        const result = response.data; // 获取整个Result对象
+                        if (result.code === 0) { // 判断操作结果代码
+                            this.formData = result.data; // 如果成功，将数据部分赋值给formData
+                            console.log(this.formData)
+                        } else {
+                            this.$message.error(result.message); // 如果失败，显示错误消息
+                        }
+                    })
+                    .catch(error => {
+                        this.$message.error('保存失败');
+                    });
+            }
+
+        }
+    });
+</script>
+</body>
+</html>

@@ -24,4 +24,7 @@ public interface UserMapper {
     void insertUser(User user);
 
     void insertUserInfo(@Param("userInfo") UserInfo userInfo);
+
+    @Select("SELECT * FROM user_info where username = #{username}")
+    UserInfo selectUserInfo(String username);
 }

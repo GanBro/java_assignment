@@ -1,5 +1,6 @@
 package com.ganbro.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.ganbro.domain.common.PageData;
 import com.ganbro.domain.common.Result;
 import com.ganbro.domain.entity.BookInfo;
@@ -28,6 +29,18 @@ public class UserController {
         PageData<UserInfo> pageData = userService.searchUserInfoByPage(query, pageNum, pageSize);
         return Result.success(pageData);
     }
+
+    @GetMapping("/{username}")
+    @ApiOperation(value = "查询用户信息")
+    public Result<UserInfo> findUserInfo(@PathVariable String username) {
+        UserInfo userInfo = userService.selectUserInfo(username);
+        if (!BeanUtil.isEmpty(userInfo)) {
+            return Result.success(userInfo, "查询成功!");
+        } else {
+            return Result.success(userInfo, "用户信息为空!");
+        }
+    }
+
     @PostMapping()
     @ApiOperation(value = "添加借阅人员信息")
     public Result<Void> addUserInfo(@RequestBody UserInfo userInfo) {

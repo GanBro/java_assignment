@@ -13,4 +13,6 @@ public interface UserService {
     void updateUserInfo(UserInfo userInfo);
 
     void addUserInfo(UserInfo userInfo);
+
+    UserInfo selectUserInfo(String username);
 }

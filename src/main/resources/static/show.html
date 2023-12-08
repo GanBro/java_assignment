@@ -16,6 +16,12 @@
 
 <div id="app">
     <el-container>
+        <!--个人中心-->
+        <el-header style="display: flex; justify-content: flex-end;">
+            <el-button type="text" @click="goToUserInfo">
+                <i class="el-icon-user" style="font-size: 40px;"></i>
+            </el-button>
+        </el-header>
         <el-main>
             <el-row :gutter="20">
                 <el-col :span="12">
@@ -174,6 +180,7 @@
                 detailDrawer: false,  // 图书详情抽屉
                 detailFormData: {},    // 用于显示图书详情的表单数据
                 showDetail: true,    // 用于控制是否显示图书详情
+                formData: {}          // 新增和编辑图书的抽屉绑定的数据
             };
         },
         methods: {
@@ -249,6 +256,12 @@
             handleSave() {
                 this.saveBook();
             },
+            /*个人中心逻辑*/
+            goToUserInfo() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const username = urlParams.get('username');
+                window.location.href = 'personalCenter.html?username=' + username;
+            }
         },
         mounted() {
             this.formData = {};

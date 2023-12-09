@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
+import java.awt.print.Book;
 import java.util.List;
 
 @RestController
@@ -29,6 +30,7 @@ public class BookController {
     @GetMapping("/searchByPage")
     @ApiOperation(value = "分页搜索图书信息")
     public Result<PageData<BookInfo>> searchBooksByPage(String query, int pageNum, int pageSize) {
+        log.error(query);
         // 更新所有BookInfo的库存和可借阅数量
         bookService.updateBookInfoStockAndAvailabelBooks();
         List<BookInfo> books = bookService.searchBooksByPage(query, pageNum, pageSize);
@@ -106,4 +108,14 @@ public class BookController {
         }
 
     }
+
+    @GetMapping("/searchBookDetail/{username}")
+    @ApiOperation(value = "借阅图书详情")
+    public Result<PageData<BookDetail>> searchBookDetail(@PathVariable String username,
+                                                         @RequestParam("currentPage") Integer currentPage,
+                                                         @RequestParam("pageSize") Integer pageSize) {
+        PageData<BookDetail> bookDetails = bookService.searchBookDetail(username, currentPage, pageSize);
+        return Result.success(bookDetails);
+    }
+    // todo 已被借阅的书籍不能删除 借阅后可借阅数量减一
 }

@@ -204,7 +204,6 @@
                             this.pagedBookList = result.data.list
                             // console.log(JSON.stringify(this.pagedBookList));
                             this.totalItems = result.data.totalItems; // 获取 totalItems 字段的值
-                            this.currentPage = result.data.currentPage; // 访问页
                             this.pageSize = result.data.pageSize; // 每页大小
                         } else {
                             this.$message.error('搜索图书失败：' + result.message);

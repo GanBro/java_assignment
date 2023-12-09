@@ -18,7 +18,7 @@
         <el-aside width="200px">
             <el-menu :default-active="activeIndex" class="el-menu-vertical-demo" @select="handleSelect">
                 <el-menu-item index="userDetail">用户详情</el-menu-item>
-                <el-menu-item index="bookDetail">图书详情</el-menu-item>
+                <el-menu-item index="bookDetail">借阅图书详情</el-menu-item>
             </el-menu>
         </el-aside>
         <el-main>
@@ -42,7 +42,22 @@
                 </el-form>
             </div>
             <div v-else-if="activeIndex === 'bookDetail'">
-                hello
+                <el-table :data="pagedBookDetailsList" style="width: 100%; margin-top: 20px;">
+                    <el-table-column prop="bookId" label="书本ID"></el-table-column>
+                    <el-table-column prop="bookName" label="书本名称"></el-table-column>
+                    <el-table-column prop="publisher" label="出版社"></el-table-column>
+                    <el-table-column prop="publishDate" label="出版时间"></el-table-column>
+                    <el-table-column prop="startDate" label="开始时间"></el-table-column>
+                    <el-table-column prop="dueDate" label="逾期时间"></el-table-column>
+                </el-table>
+                <el-pagination
+                        @current-change="bookDetailHandleCurrentChange"
+                        :current-page.sync="currentPage"
+                        :page-size="pageSize"
+                        :page-sizes="[10, 20, 30, 40]"
+                        layout="total, prev, pager, next"
+                        :total="totalItems"
+                ></el-pagination>
             </div>
         </el-main>
     </el-container>
@@ -56,24 +71,32 @@
         el: '#app',
         data() {
             return {
+                username: '', // 用户名
                 formData: {},
-                activeIndex: 'userDetail'
+                activeIndex: 'userDetail', // 生效侧栏页面
+                pagedBookDetailsList: [], // 查询到的书本列表
+                currentPage: 1,
+                pageSize: 5,
+                totalItems: -1,
             };
         },
-        created() {
-            this.initData();
+        mounted() {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            this.username = urlParams.get('username');
+            this.initData(); // 要先获取到username才能调用initData();
         },
         methods: {
             handleSelect(index) {
                 this.activeIndex = index;
+                if (index === 'bookDetail') {
+                    this.search(this.currentPage, this.pageSize);
+                } else if (index === 'userDetail') {
+                    this.initData();
+                }
             },
             initData() {
-                // 获取查询字符串
-                const queryString = window.location.search;
-                // 创建 URLSearchParams 对象
-                const urlParams = new URLSearchParams(queryString);
-                const username = urlParams.get('username');
-                axios.get(`http://localhost:8080/api/users/${username}`)
+                axios.get(`http://localhost:8080/api/users/${this.username}`)
                     .then(response => {
                         const result = response.data; // 获取整个Result对象
                         if (result.code === 0) { // 判断操作结果代码
@@ -84,9 +107,28 @@
                         }
                     })
                     .catch(error => {
+                        this.$message.error('查询用户信息失败');
+                    });
+            },
+            search(currentPage, pageSize) {
+                axios.get(`http://localhost:8080/api/books/searchBookDetail/${this.username}?currentPage=${currentPage}&pageSize=${pageSize}`)
+                    .then(response => {
+                        const result = response.data; // 获取整个Result对象
+                        if (result.code === 0) { // 判断操作结果代码
+                            this.pagedBookDetailsList = result.data.list; // 如果成功，将数据部分赋值给 pagedBookDetailsList
+                            this.totalItems = result.data.totalItems
+                        } else {
+                            this.$message.error(result.message); // 如果失败，显示错误消息
+                        }
+                    })
+                    .catch(error => {
                         this.$message.error('保存失败');
                     });
-            }
+            },
+            bookDetailHandleCurrentChange(page) {
+                this.currentPage = page;
+                this.search(this.currentPage, this.pageSize);
+            },
 
         }
     });

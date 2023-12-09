@@ -1,6 +1,7 @@
 package com.ganbro.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.ganbro.domain.common.PageData;
 import com.ganbro.domain.dto.OverdueDto;
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
@@ -11,6 +12,7 @@ import com.ganbro.service.BookService;
 import com.ganbro.utils.LocalDateTimeUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -66,25 +68,6 @@ public class BookServiceImpl implements BookService {
         int cnt = bookMapper.updateByBookInfo(bookInfo, sub);
         return cnt > 0;
     }
-/*    @Override
-    public void insertByBookDetail(BookDetail bookDetail) {
-        bookDetail.setIsBorrowed(false); // 默认没借出去
-        // 1. 判断书是否存在
-        List<BookInfo> bookInfos= bookMapper.selectByBookNameAndPublisher(bookDetail.getBookName(), bookDetail.getPublisher());
-        log.error(bookInfos.toString());
-        if (!bookInfos.isEmpty()) { // 不为空
-            Integer id = bookMapper.selectBookInfoIdByBookNameAndPublisher(bookDetail.getBookName(), bookDetail.getPublisher());
-            bookMapper.addTotalInventoryById(id);
-        } else {
-            // 1. 详细表插入
-            bookMapper.insertByBookDetail(bookDetail);
-            // 2. 新增book_info信息
-            BookInfo bookInfo = new BookInfo();
-            BeanUtil.copyProperties(bookDetail, bookInfo);
-            bookInfo.setAvailableBooks(bookInfo.getTotalInventory());
-            bookMapper.insertByBookInfo(bookInfo);
-        }
-    }*/
 
     @Override
     public void insertByBookBookInfo(BookInfo bookInfo) {
@@ -202,6 +185,28 @@ public class BookServiceImpl implements BookService {
         }
         return overdueDto;
     }
+
+    @Override
+    public PageData<BookDetail> searchBookDetail(String username, Integer currentPage, Integer pageSize) {
+        // 设置分页参数
+        PageHelper.startPage(currentPage, pageSize);
+        // 进行分页查询
+        UserInfo userInfo = userMapper.selectUserInfo(username);
+        List<BookDetail> bookDetails = bookMapper.selectBookDetail(userInfo.getUserId());
+        // 封装分页结果
+        PageInfo<BookDetail> pageInfo = new PageInfo<>(bookDetails);
+
+        // 构建返回结果对象
+        PageData<BookDetail> pageData = new PageData<>();
+        pageData.setList(pageInfo.getList());
+        pageData.setTotalItems(pageInfo.getTotal());
+        pageData.setCurrentPage(pageInfo.getPageNum());
+        pageData.setPageSize(pageInfo.getPageSize());
+
+        // 返回查询结果
+        return pageData;
+    }
+
 
 
 }

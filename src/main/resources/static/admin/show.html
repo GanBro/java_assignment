@@ -356,13 +356,13 @@
                         .then(response => {
                             const result = response.data;
                             if (result.code === 0) {
-                                this.$message.success('删除图书成功');
+                                this.$message.success(result.message);
                                 // 删除成功后重新加载图书列表
                                 this.searchBooks(this.currentPage, this.pageSize);
                                 // 关闭抽屉
                                 this.detailDrawer = false;
                             } else {
-                                this.$message.error('删除图书失败：' + result.message);
+                                this.$message.error(result.message);
                             }
                         })
                         .catch(error => {

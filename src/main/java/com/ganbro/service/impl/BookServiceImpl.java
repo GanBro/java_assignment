@@ -2,6 +2,7 @@ package com.ganbro.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.ganbro.domain.common.PageData;
+import com.ganbro.domain.dto.DeleteBookDetailDto;
 import com.ganbro.domain.dto.OverdueDto;
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
@@ -136,21 +137,30 @@ public class BookServiceImpl implements BookService {
         for (BookInfo bookInfo : bookInfos) {
             List<BookDetail> bookDetails = bookMapper.selectBookDetailByBookInfo(bookInfo);
             bookMapper.updateTotalInventory(bookDetails.size(), bookInfo.getBookInfoId());
-            bookMapper.updateAvailableBooks(bookDetails.size(), bookInfo.getBookInfoId());
-            // todo: 可用图书还没改
             bookInfo.setAvailableBooks(bookDetails.size());
         }
     }
 
     @Override
-    public void deleteDetailBookById(Integer bookId) {
+    public DeleteBookDetailDto deleteDetailBookById(Integer bookId) {
+        DeleteBookDetailDto deleteBookDetailDto = new DeleteBookDetailDto();
+        BookDetail bookDetail = bookMapper.selectBookDetailById(bookId);
+        if (bookDetail.getIsBorrowed()) {
+            deleteBookDetailDto.setFlag(false);
+            deleteBookDetailDto.setMessage("图书已被借出，不能删除!!!");
+            return deleteBookDetailDto;
+        }
         bookMapper.deleteDetailBookById(bookId);
+        deleteBookDetailDto.setFlag(true);
+        deleteBookDetailDto.setMessage("删除成功!!!");
+        return deleteBookDetailDto;
     }
 
     @Override
     public OverdueDto borrowBook(String username, Integer bookId) {
         OverdueDto overdueDto = new OverdueDto();
         BookDetail bookDetail = bookMapper.selectBookDetailById(bookId);
+        BookInfo bookInfo = bookMapper.selectBookInfo(bookDetail);
         if (bookDetail.getIsBorrowed()) {
             overdueDto.setMessage("此书已被借阅，请重新挑选!!!");
             overdueDto.setFlag(false);
@@ -162,6 +172,13 @@ public class BookServiceImpl implements BookService {
             overdueDto.setFlag(false);
             return overdueDto;
         }
+        if (bookInfo.getAvailableBooks() <= 0) {
+            overdueDto.setMessage("书已借完!!!");
+            overdueDto.setFlag(false);
+            return overdueDto;
+        }
+        bookInfo.setAvailableBooks(bookInfo.getAvailableBooks() - 1); // 更新可借阅的书
+        bookMapper.updateBookInfo(bookInfo);
         // 已经借到的书的数量
         int haveBorrowed = userInfo.getBorrowedBooks();
         // 最大可借数量
@@ -175,7 +192,6 @@ public class BookServiceImpl implements BookService {
             bookDetail.setDueDate(LocalDateTimeUtil.format(LocalDateTime.now().plusDays(add)));
             bookMapper.updateByBookDetail(bookDetail);
             userInfo.setBorrowedBooks(userInfo.getBorrowedBooks() + 1); // 借一本
-            log.error(String.valueOf(userInfo));
             userMapper.updateUserInfo(userInfo);
             overdueDto.setFlag(true);
             overdueDto.setMessage("借书成功!!!");

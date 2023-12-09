@@ -55,6 +55,15 @@
         due_date = #{bookDetail.dueDate}
         WHERE book_id = #{bookDetail.bookId}
     </update>
+    <update id="updateBookInfo">
+        UPDATE book_info
+        SET book_name = #{bookInfo.bookName},
+            publisher = #{bookInfo.publisher},
+            publish_date = #{bookInfo.publishDate},
+            total_inventory = #{bookInfo.totalInventory},
+            available_books = #{bookInfo.availableBooks}
+        WHERE book_info_id = #{bookInfo.bookInfoId}
+    </update>
 
 
 </mapper>

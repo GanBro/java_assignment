@@ -2,6 +2,7 @@ package com.ganbro.controller;
 
 import com.ganbro.domain.common.PageData;
 import com.ganbro.domain.common.Result;
+import com.ganbro.domain.dto.DeleteBookDetailDto;
 import com.ganbro.domain.dto.OverdueDto;
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
@@ -85,8 +86,12 @@ public class BookController {
     @DeleteMapping("/detail/{bookId}")
     @ApiOperation(value = "删除详细图书")
     public Result<Void> deleteDetailBook(@PathVariable Integer bookId) {
-        bookService.deleteDetailBookById(bookId);
-        return Result.success(null);
+        DeleteBookDetailDto deleteBookDetailDto = bookService.deleteDetailBookById(bookId);
+        if (deleteBookDetailDto.getFlag()) {
+            return Result.success(null, deleteBookDetailDto.getMessage());
+        } else {
+            return Result.error(null, deleteBookDetailDto.getMessage());
+        }
     }
 
     @GetMapping("/{bookInfoId}/details")
@@ -110,12 +115,12 @@ public class BookController {
     }
 
     @GetMapping("/searchBookDetail/{username}")
-    @ApiOperation(value = "借阅图书详情")
+    @ApiOperation(value = "借阅图书详情展示")
     public Result<PageData<BookDetail>> searchBookDetail(@PathVariable String username,
                                                          @RequestParam("currentPage") Integer currentPage,
                                                          @RequestParam("pageSize") Integer pageSize) {
         PageData<BookDetail> bookDetails = bookService.searchBookDetail(username, currentPage, pageSize);
         return Result.success(bookDetails);
     }
-    // todo 已被借阅的书籍不能删除 借阅后可借阅数量减一
+    // todo 已被借阅的书籍不能删除 删除图书库存可借阅数量也要改
 }

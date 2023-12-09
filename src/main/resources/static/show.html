@@ -195,7 +195,6 @@
                             this.pagedBookList = result.data.list;
                             console.log(JSON.stringify(this.pagedBookList));
                             this.totalItems = result.data.totalItems; // 获取 totalItems 字段的值
-                            this.pageSize = result.data.pageSize; // 每页大小
                         } else {
                             this.$message.error('搜索图书失败：' + result.message);
                         }
@@ -268,6 +267,7 @@
                             // 借阅成功的处理逻辑
                             this.detailDrawer = false;
                             this.$message.success(result.message);
+                            this.currentPage = 1; // 回到首页
                             // 更新图书列表
                             this.searchBooks(this.currentPage, this.pageSize);
                         } else {

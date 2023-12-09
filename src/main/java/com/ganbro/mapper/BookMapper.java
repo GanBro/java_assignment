@@ -76,6 +76,11 @@ public interface BookMapper {
     @Delete("delete from book_details where book_id = #{bookId}")
     void deleteDetailBookById(Integer bookId);
 
-    @Select("select * from book_details where user_id = #{userId}")
+    @Select("SELECT * FROM book_info where book_name = #{bookDetail.bookName} and publisher = #{bookDetail.publisher}")
+    BookInfo selectBookInfo(@Param("bookDetail") BookDetail bookDetail);
+
+    @Select("SELECT * FROM book_details WHERE user_id = #{userId}")
     List<BookDetail> selectBookDetail(Integer userId);
+
+    void updateBookInfo(@Param("bookInfo") BookInfo bookInfo);
 }

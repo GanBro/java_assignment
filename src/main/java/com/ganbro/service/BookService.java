@@ -1,6 +1,7 @@
 package com.ganbro.service;
 
 import com.ganbro.domain.common.PageData;
+import com.ganbro.domain.dto.DeleteBookDetailDto;
 import com.ganbro.domain.dto.OverdueDto;
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
@@ -35,7 +36,7 @@ public interface BookService {
 
     void updateBookInfoStockAndAvailabelBooks();
 
-    void deleteDetailBookById(Integer bookId);
+    DeleteBookDetailDto deleteDetailBookById(Integer bookId);
 
     /*返回消息*/
     OverdueDto borrowBook(String username, Integer bookId);

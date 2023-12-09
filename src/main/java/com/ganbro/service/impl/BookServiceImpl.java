@@ -167,6 +167,12 @@ public class BookServiceImpl implements BookService {
     @Override
     public OverdueDto borrowBook(String username, Integer bookId) {
         OverdueDto overdueDto = new OverdueDto();
+        BookDetail bookDetail = bookMapper.selectBookDetailById(bookId);
+        if (bookDetail.getIsBorrowed()) {
+            overdueDto.setMessage("此书已被借阅，请重新挑选!!!");
+            overdueDto.setFlag(false);
+            return overdueDto;
+        }
         UserInfo userInfo = userMapper.selectUserInfo(username);
         if (userInfo.getOverdueBooks() > 0) {
             overdueDto.setMessage("您已逾期,禁止借书!!!");
@@ -178,7 +184,6 @@ public class BookServiceImpl implements BookService {
         // 最大可借数量
         int maxCanBorrow = userInfo.getMaxBooksAllowed();
         if (maxCanBorrow - haveBorrowed > 0) {
-            BookDetail bookDetail = bookMapper.selectBookDetailById(bookId);
             bookDetail.setIsBorrowed(true);
             bookDetail.setUserId(userInfo.getUserId());
             bookDetail.setStartDate(LocalDateTimeUtil.format(LocalDateTime.now()));

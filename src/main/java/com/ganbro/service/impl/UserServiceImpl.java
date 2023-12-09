@@ -52,7 +52,12 @@ public class UserServiceImpl implements UserService {
     public void addUserInfo(UserInfo userInfo) {
         if (userInfo.getIsVip() == null) {
             userInfo.setIsVip(false);
+            userInfo.setMaxBooksAllowed(5);
+        } else {
+            userInfo.setMaxBooksAllowed(10);
         }
+        userInfo.setBorrowedBooks(0);
+        userInfo.setOverdueBooks(0);
         User user = new User();
         user.setUsername(userInfo.getUsername());
         user.setPassword(user.getUsername());

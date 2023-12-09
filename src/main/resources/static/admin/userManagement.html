@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         .custom-drawer {
-            height: 2200px;
+            height: 200px;
         }
         .custom-drawer .el-form {
             padding-left: 20px; /* 将抽屉内的表单内容向右移动 */
@@ -71,30 +71,31 @@
 
     <!-- 新增和编辑用户的抽屉 -->
     <el-drawer
-            title="新增用户"
+            :title="flag === 0 ? '新增用户' : '编辑用户'"
             :visible.sync="drawer"
             :direction="direction"
             :before-close="detailHandleClose"
-            class="custom-drawer"
+            :style="drawerStyle"
     >
         <el-form ref="userForm" :model="formData" label-width="100px">
-            <el-form-item label="用户ID" prop="userId">
+            <el-form-item label="用户ID" prop="userId" v-if="flag !== 0">
                 <el-input v-model="formData.userId" disabled></el-input>
             </el-form-item>
             <el-form-item label="用户名" prop="username">
                 <el-input v-model="formData.username"></el-input>
             </el-form-item>
-            <el-form-item label="用户可借阅的书本数量" prop="maxBooksAllowed">
+            <el-form-item label="用户可借阅的书本数量" prop="maxBooksAllowed" v-if="flag !== 0">
                 <el-input v-model="formData.maxBooksAllowed"></el-input>
             </el-form-item>
-            <el-form-item label="已经借阅的书本数量" prop="borrowedBooks">
-                <el-input v-model="formData.borrowedBooks"></el-input>
+            <el-form-item label="已经借阅的书本数量" prop="borrowedBooks" v-if="flag !== 0">
+<!--                <el-input v-model="formData.borrowedBooks"></el-input>-->
+                <el-input v-model="formData.borrowedBooks" :disabled="flag !== 0"></el-input>
             </el-form-item>
             <el-form-item label="是否为VIP" prop="isVip">
                 <el-switch v-model="formData.isVip"></el-switch>
             </el-form-item>
-            <el-form-item label="逾期未归还的图书数量" prop="overdueBooks">
-                <el-input v-model="formData.overdueBooks"></el-input>
+            <el-form-item label="逾期未归还的图书数量" prop="overdueBooks" v-if="flag !== 0">
+                <el-input v-model="formData.overdueBooks" :disabled="flag !== 0"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="handleSave">保存</el-button>
@@ -130,7 +131,8 @@
                 // 用户详情的抽屉相关数据
                 detailDrawer: false,
                 detailFormData: {},
-                flag: 0       // 控制新增和修改, 0新增1修改
+                flag: 0,       // 控制新增和修改, 0新增1修改
+                drawerHeight: '2200px' //控制抽屉高度
             };
         },
         methods: {
@@ -171,7 +173,6 @@
                             console.log(error);
                         });
                 } else if (this.flag === 0) {
-                    console.log(this.formData)
                     axios.post(`http://localhost:8080/api/users`, this.formData)
                         .then(response => {
                             this.$message.success(response.data.message);
@@ -208,11 +209,13 @@
                 });
             },
             editUser(userInfo) {
+                this.drawerHeight = '2200px';
                 this.flag = 1;
                 this.formData = { ...userInfo }; // 将要编辑的用户信息赋值给formData
                 this.drawer = true; // 打开新增和编辑用户的抽屉
             },
             addUser() {
+                this.drawerHeight = '1000px';
                 this.flag = 0;
                 this.drawer = true;
                 this.formData = {};
@@ -220,6 +223,15 @@
         },
         mounted() {
             this.searchUsers(this.currentPage, this.pageSize);
+        },
+        computed: {
+            // 动态控制css样式
+            drawerStyle() {
+                return {
+                    height: this.drawerHeight,
+                    'padding-left': '20px' /* 将抽屉内的表单内容向右移动 */
+                };
+            }
         }
     });
 </script>

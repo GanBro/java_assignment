@@ -14,23 +14,38 @@
 </head>
 <body>
 <div id="app">
-    <el-form :model="formData" label-width="100px" style="width: 50%;">
-        <el-form-item label="用户名">
-            <el-input v-model="formData.username" :readonly="true"></el-input>
-        </el-form-item>
-        <el-form-item label="用户可借阅的书本数量">
-            <el-input v-model="formData.maxBooksAllowed" :readonly="true"></el-input>
-        </el-form-item>
-        <el-form-item label="已经借阅的书本数量">
-            <el-input v-model="formData.borrowedBooks" :readonly="true"></el-input>
-        </el-form-item>
-        <el-form-item label="是否为VIP">
-            <el-switch v-model="formData.isVip" active-text="是" inactive-text="否" :disabled="true"></el-switch>
-        </el-form-item>
-        <el-form-item label="逾期未归还的图书数量">
-            <el-input v-model="formData.overdueBooks" :readonly="true"></el-input>
-        </el-form-item>
-    </el-form>
+    <el-container>
+        <el-aside width="200px">
+            <el-menu :default-active="activeIndex" class="el-menu-vertical-demo" @select="handleSelect">
+                <el-menu-item index="userDetail">用户详情</el-menu-item>
+                <el-menu-item index="bookDetail">图书详情</el-menu-item>
+            </el-menu>
+        </el-aside>
+        <el-main>
+            <div v-if="activeIndex === 'userDetail'">
+                <el-form :model="formData" label-width="100px" style="width: 50%;">
+                    <el-form-item label="用户名">
+                        <el-input v-model="formData.username" :readonly="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="用户可借阅的书本数量">
+                        <el-input v-model="formData.maxBooksAllowed" :readonly="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="已经借阅的书本数量">
+                        <el-input v-model="formData.borrowedBooks" :readonly="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="是否为VIP">
+                        <el-switch v-model="formData.isVip" active-text="是" inactive-text="否" :disabled="true"></el-switch>
+                    </el-form-item>
+                    <el-form-item label="逾期未归还的图书数量">
+                        <el-input v-model="formData.overdueBooks" :readonly="true"></el-input>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <div v-else-if="activeIndex === 'bookDetail'">
+                hello
+            </div>
+        </el-main>
+    </el-container>
 
 </div>
 
@@ -41,13 +56,17 @@
         el: '#app',
         data() {
             return {
-                formData: {}
+                formData: {},
+                activeIndex: 'userDetail'
             };
         },
         created() {
             this.initData();
         },
         methods: {
+            handleSelect(index) {
+                this.activeIndex = index;
+            },
             initData() {
                 // 获取查询字符串
                 const queryString = window.location.search;

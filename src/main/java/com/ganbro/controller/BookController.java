@@ -96,7 +96,7 @@ public class BookController {
     }
 
     @PostMapping("/borrow/{username}")
-    @ApiOperation(value = "借书")
+    @ApiOperation(value = "借阅图书")
     public Result<Void> borrowBook(@PathVariable String username, @PathParam("bookId") Integer bookId) {
         OverdueDto overdueDto = bookService.borrowBook(username, bookId);
         if (overdueDto.isFlag()) {

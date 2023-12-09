@@ -1,16 +1,21 @@
 package com.ganbro.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.ganbro.domain.dto.OverdueDto;
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
+import com.ganbro.domain.entity.UserInfo;
 import com.ganbro.mapper.BookMapper;
+import com.ganbro.mapper.UserMapper;
 import com.ganbro.service.BookService;
+import com.ganbro.utils.LocalDateTimeUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -18,6 +23,7 @@ import java.util.List;
 @Slf4j
 public class BookServiceImpl implements BookService {
     private final BookMapper bookMapper;
+    private final UserMapper userMapper;
     @Override
     public List<BookInfo> searchBooks(String query) {
         List<BookInfo> bookInfos = bookMapper.searchBooks(query);
@@ -156,6 +162,39 @@ public class BookServiceImpl implements BookService {
     @Override
     public void deleteDetailBookById(Integer bookId) {
         bookMapper.deleteDetailBookById(bookId);
+    }
+
+    @Override
+    public OverdueDto borrowBook(String username, Integer bookId) {
+        OverdueDto overdueDto = new OverdueDto();
+        UserInfo userInfo = userMapper.selectUserInfo(username);
+        if (userInfo.getOverdueBooks() > 0) {
+            overdueDto.setMessage("您已逾期,禁止借书!!!");
+            overdueDto.setFlag(false);
+            return overdueDto;
+        }
+        // 已经借到的书的数量
+        int haveBorrowed = userInfo.getBorrowedBooks();
+        // 最大可借数量
+        int maxCanBorrow = userInfo.getMaxBooksAllowed();
+        if (maxCanBorrow - haveBorrowed > 0) {
+            BookDetail bookDetail = bookMapper.selectBookDetailById(bookId);
+            bookDetail.setIsBorrowed(true);
+            bookDetail.setUserId(userInfo.getUserId());
+            bookDetail.setStartDate(LocalDateTimeUtil.format(LocalDateTime.now()));
+            Boolean isVip = userInfo.getIsVip();
+            int add = isVip ? 90 : 30; //vip90天，普通用户30天
+            bookDetail.setDueDate(LocalDateTimeUtil.format(LocalDateTime.now().plusDays(add)));
+            bookMapper.updateByBookDetail(bookDetail);
+            userInfo.setBorrowedBooks(userInfo.getBorrowedBooks() + 1); // 借一本
+            userMapper.updateUsers(userInfo);
+            overdueDto.setFlag(true);
+            overdueDto.setMessage("借书成功!!!");
+        } else {
+            overdueDto.setMessage("您已超出最大可借数量!!!");
+            overdueDto.setFlag(false);
+        }
+        return overdueDto;
     }
 
 

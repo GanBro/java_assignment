@@ -22,5 +22,5 @@ public class User {
     private Integer userId;
 
     @ApiModelProperty(value = "是否管理员", example = "0")
-    private Integer isAdmin;
+    private Boolean isAdmin;
 }

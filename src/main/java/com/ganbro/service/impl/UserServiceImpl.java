@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setUsername(userInfo.getUsername());
         user.setPassword(user.getUsername());
-        user.setIsAdmin(0); // 默认为普通用户
+        user.setIsAdmin(false); // 默认为普通用户
         userMapper.insertUser(user);
         Integer id = user.getUserId();
         userInfo.setUserId(id);

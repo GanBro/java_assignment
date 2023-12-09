@@ -168,6 +168,7 @@
         el: '#app',
         data() {
             return {
+                username: '',
                 searchKeyword: '',
                 pagedBookList: [],   // 当前页面显示的图书列表
                 totalItems: 0,       // 图书总数
@@ -258,12 +259,33 @@
             },
             /*个人中心逻辑*/
             goToUserInfo() {
+                window.location.href = 'personalCenter.html?username=' + this.username;
+            },
+            /*借阅逻辑*/
+            handleBorrow(bookDetail) {
                 const urlParams = new URLSearchParams(window.location.search);
                 const username = urlParams.get('username');
-                window.location.href = 'personalCenter.html?username=' + username;
+                axios.post(`http://localhost:8080/api/books/borrow/${username}?bookId=${bookDetail.bookId}`)
+                    .then(response => {
+                        const result = response.data;
+                        if (result.code === 0) {
+                            // 借阅成功的处理逻辑
+                            this.$message.success(result.message);
+                            // 更新图书列表
+                            this.searchBooks(this.currentPage, this.pageSize);
+                        } else {
+                            // 借阅失败的处理逻辑
+                            console.error('借阅失败：' + result.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('借阅图书时出错：', error);
+                    });
             }
         },
         mounted() {
+            const urlParams = new URLSearchParams(window.location.search);
+            this.username = urlParams.get('username');
             this.formData = {};
             this.searchBooks(this.currentPage, this.pageSize);
         },

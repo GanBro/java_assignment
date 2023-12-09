@@ -2,6 +2,7 @@ package com.ganbro.controller;
 
 import com.ganbro.domain.common.PageData;
 import com.ganbro.domain.common.Result;
+import com.ganbro.domain.dto.OverdueDto;
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
 import com.ganbro.service.BookService;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.util.List;
 
 @RestController
@@ -91,5 +93,12 @@ public class BookController {
         // 调用 BookService 中的方法获取图书详细信息
         List<BookDetail> bookDetails = bookService.selectBookDetailByBookInfo(bookInfoId);
         return Result.success(bookDetails);
+    }
+
+    @PostMapping("/borrow/{username}")
+    @ApiOperation(value = "借书")
+    public Result<Void> borrowBook(@PathVariable String username, @PathParam("bookId") Integer bookId) {
+        OverdueDto overdueDto = bookService.borrowBook(username, bookId);
+        return Result.success(null, overdueDto.getMessage());
     }
 }

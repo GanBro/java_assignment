@@ -187,7 +187,8 @@ public class BookServiceImpl implements BookService {
             bookDetail.setDueDate(LocalDateTimeUtil.format(LocalDateTime.now().plusDays(add)));
             bookMapper.updateByBookDetail(bookDetail);
             userInfo.setBorrowedBooks(userInfo.getBorrowedBooks() + 1); // 借一本
-            userMapper.updateUsers(userInfo);
+            log.error(String.valueOf(userInfo));
+            userMapper.updateUserInfo(userInfo);
             overdueDto.setFlag(true);
             overdueDto.setMessage("借书成功!!!");
         } else {

@@ -270,12 +270,14 @@
                         const result = response.data;
                         if (result.code === 0) {
                             // 借阅成功的处理逻辑
+                            this.detailDrawer = false;
                             this.$message.success(result.message);
+
                             // 更新图书列表
                             this.searchBooks(this.currentPage, this.pageSize);
                         } else {
                             // 借阅失败的处理逻辑
-                            console.error('借阅失败：' + result.message);
+                            this.$message.error('借阅失败：' + result.message);
                         }
                     })
                     .catch(error => {

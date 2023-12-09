@@ -24,11 +24,11 @@ public class Result<T> {
         return new Result<>(0, message, data);
     }
 
-    public static <T> Result<T> error(int code, String message) {
-        return new Result<>(code, message, null);
+    public static <T> Result<T> error(T data) {
+        return new Result<>(1, "Error", data);
     }
 
-    public static <T> Result<T> error(String message) {
-        return new Result<>(1, message, null);
+    public static <T> Result<T> error(T data, String message) {
+        return new Result<>(1, message, data);
     }
 }

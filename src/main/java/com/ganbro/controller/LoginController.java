@@ -29,12 +29,12 @@ public class LoginController {
         String username = user.getUsername();
         String password = loginService.findPasswordByUsername(username);
         if (password == null) {
-            return Result.error(401, "登录失败，用户名或密码错误");
+            return Result.error(null, "登录失败，用户名或密码错误");
         }
         if (user.getPassword().equals(password)) {
             return Result.success("登录成功");
         }
-        return Result.error(401, "登录失败，用户名或密码错误");
+        return Result.error(null, "登录失败，用户名或密码错误");
     }
 
     @PostMapping("/adminlogin")
@@ -46,7 +46,7 @@ public class LoginController {
         String password = loginService.findPasswordByUsername(username);
         int flag = loginService.findIsAdminByUsername(username);
         if (password == null) {
-            return Result.error(401, "登录失败，用户名或密码错误");
+            return Result.error(null, "登录失败，用户名或密码错误");
         }
         if (user.getPassword().equals(password)) {
             if (flag == 0) {
@@ -54,7 +54,7 @@ public class LoginController {
             }
             return Result.success("登录成功");
         }
-        return Result.error(401, "登录失败，用户名或密码错误");
+        return Result.error(null, "登录失败，用户名或密码错误");
 
     }
 }

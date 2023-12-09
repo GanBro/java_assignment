@@ -56,7 +56,7 @@ public class BookController {
         if (success) {
             return Result.success(null,"修改图书信息成功");  // 返回成功结果
         } else {
-            return Result.error("修改图书信息失败");  // 返回失败结果
+            return Result.error(null, "修改图书信息失败");  // 返回失败结果
         }
     }
 
@@ -67,7 +67,7 @@ public class BookController {
         if (success) {
             return Result.success(null,"修改图书信息成功");  // 返回成功结果
         } else {
-            return Result.error("修改图书信息失败");  // 返回失败结果
+            return Result.error(null,"修改图书信息失败");  // 返回失败结果
         }
     }
 
@@ -99,6 +99,11 @@ public class BookController {
     @ApiOperation(value = "借书")
     public Result<Void> borrowBook(@PathVariable String username, @PathParam("bookId") Integer bookId) {
         OverdueDto overdueDto = bookService.borrowBook(username, bookId);
-        return Result.success(null, overdueDto.getMessage());
+        if (overdueDto.isFlag()) {
+            return Result.success(null, overdueDto.getMessage());
+        } else {
+            return Result.error(null, overdueDto.getMessage());
+        }
+
     }
 }

@@ -3,6 +3,7 @@ package com.ganbro.controller;
 import cn.hutool.core.bean.BeanUtil;
 import com.ganbro.domain.common.PageData;
 import com.ganbro.domain.common.Result;
+import com.ganbro.domain.dto.DeleteUserInfoDto;
 import com.ganbro.domain.entity.BookInfo;
 import com.ganbro.domain.entity.User;
 import com.ganbro.domain.entity.UserInfo;
@@ -60,8 +61,13 @@ public class UserController {
     @DeleteMapping("/{userId}")
     @ApiOperation(value = "删除借阅人员信息")
     public Result<Void> deleteBorrower(@PathVariable Integer userId) {
-        userService.deleteUserById(userId);
-        return Result.success(null);
+        DeleteUserInfoDto deleteUserInfoDto = userService.deleteUserById(userId);
+        if (deleteUserInfoDto.getFlag()) {
+            return Result.success(null, deleteUserInfoDto.getMessage());
+        } else {
+            return Result.error(null, deleteUserInfoDto.getMessage());
+        }
+
     }
 
     @PutMapping("/updateDueBooks")

@@ -197,9 +197,14 @@
                 }).then(() => {
                     axios.delete(`http://localhost:8080/api/users/${userInfo.userId}`)
                         .then(response => {
-                            // 删除成功后刷新用户列表并弹出提示框
-                            this.searchUsers(this.currentPage, this.pageSize);
-                            this.$message.success("删除成功!");
+                            const result = response.data;
+                            if (result.code === 0) {
+                                // 删除成功后刷新用户列表并弹出提示框
+                                this.searchUsers(this.currentPage, this.pageSize);
+                                this.$message.success(result.message);
+                            } else {
+                                this.$message.error(result.message);
+                            }
                         })
                         .catch(error => {
                             console.log(error);

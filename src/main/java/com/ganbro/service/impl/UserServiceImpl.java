@@ -1,6 +1,7 @@
 package com.ganbro.service.impl;
 
 import com.ganbro.domain.common.PageData;
+import com.ganbro.domain.dto.DeleteUserInfoDto;
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
 import com.ganbro.domain.entity.User;
@@ -65,8 +66,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUserById(Integer userId) {
-        userMapper.deleteUserById(userId);
+    public DeleteUserInfoDto deleteUserById(Integer userId) {
+        UserInfo userInfo = userMapper.selectUserInfoByUserId(userId);
+        DeleteUserInfoDto deleteUserInfoDto = new DeleteUserInfoDto();
+        if (userInfo.getBorrowedBooks() > 0) {
+            deleteUserInfoDto.setFlag(false);
+            deleteUserInfoDto.setMessage("该用户还有书未归还，不能删除!!!");
+        } else {
+            userMapper.deleteUserById(userId);
+            deleteUserInfoDto.setFlag(true);
+            deleteUserInfoDto.setMessage("删除成功");
+        }
+        return deleteUserInfoDto;
     }
 
     @Override

@@ -81,6 +81,12 @@ public class BookController {
     @ApiOperation(value = "删除图书信息")
     public Result<Void> deleteBook(@PathVariable("bookId") Integer bookInfoId) {
         String name = bookService.selectNameById(bookInfoId);
+        List<BookDetail> bookDetails = bookService.selectBookDetailByBookInfo(bookInfoId);
+        for (BookDetail bookDetail : bookDetails) {
+            if (bookDetail.getIsBorrowed()) {
+                return Result.error(null, "图书" + name + "已被借出，无法删除");
+            }
+        }
         bookService.deleteBookDetailsByBookId(bookInfoId);
         bookService.deleteById(bookInfoId);
         return Result.success(null, "删除图书" + name + "成功");

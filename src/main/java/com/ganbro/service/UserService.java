@@ -15,4 +15,6 @@ public interface UserService {
     void addUserInfo(UserInfo userInfo);
 
     UserInfo selectUserInfo(String username);
+
+    void updateDueBooks(String username);
 }

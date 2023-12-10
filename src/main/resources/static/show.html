@@ -278,13 +278,24 @@
                     .catch(error => {
                         console.error('借阅图书时出错：', error);
                     });
-            }
+            },
+            // 更新逾期数量
+            updateOverdue(username) {
+                axios.put(`http://localhost:8080/api/users/updateDueBooks?username=${username}`)
+                    .then(response => {
+                        // ...
+                    })
+                    .catch(error => {
+                        console.error('更新逾期数量出错了：', error);
+                    });
+            },
         },
         mounted() {
             const urlParams = new URLSearchParams(window.location.search);
             this.username = urlParams.get('username');
             this.formData = {};
             this.searchBooks(this.currentPage, this.pageSize);
+            this.updateOverdue(this.username);
         },
         computed: {
             paginatedDetailData() {

@@ -18,7 +18,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -160,16 +166,16 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public OverdueDto borrowBook(String username, Integer bookId) {
+    public OverdueDto borrowBook(String username, Integer bookId) throws ParseException {
         OverdueDto overdueDto = new OverdueDto();
         BookDetail bookDetail = bookMapper.selectBookDetailById(bookId);
         BookInfo bookInfo = bookMapper.selectBookInfo(bookDetail);
+        UserInfo userInfo = userMapper.selectUserInfo(username);
         if (bookDetail.getIsBorrowed()) {
             overdueDto.setMessage("此书已被借阅，请重新挑选!!!");
             overdueDto.setFlag(false);
             return overdueDto;
         }
-        UserInfo userInfo = userMapper.selectUserInfo(username);
         if (userInfo.getOverdueBooks() > 0) {
             overdueDto.setMessage("您已逾期,禁止借书!!!");
             overdueDto.setFlag(false);

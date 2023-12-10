@@ -12,6 +12,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -60,5 +62,12 @@ public class UserController {
     public Result<Void> deleteBorrower(@PathVariable Integer userId) {
         userService.deleteUserById(userId);
         return Result.success(null);
+    }
+
+    @PutMapping("/updateDueBooks")
+    @ApiOperation(value = "更新逾期图书")
+    public Result<Void> updateDueBooks(@PathParam("username") String username) {
+        userService.updateDueBooks(username);
+        return Result.success(null, "更新成功");
     }
 }

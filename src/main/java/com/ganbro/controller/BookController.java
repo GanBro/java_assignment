@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
 import java.awt.print.Book;
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -104,7 +105,7 @@ public class BookController {
 
     @PostMapping("/borrow/{username}")
     @ApiOperation(value = "借阅图书")
-    public Result<Void> borrowBook(@PathVariable String username, @PathParam("bookId") Integer bookId) {
+    public Result<Void> borrowBook(@PathVariable String username, @PathParam("bookId") Integer bookId) throws ParseException {
         OverdueDto overdueDto = bookService.borrowBook(username, bookId);
         if (overdueDto.isFlag()) {
             return Result.success(null, overdueDto.getMessage());
@@ -122,5 +123,5 @@ public class BookController {
         PageData<BookDetail> bookDetails = bookService.searchBookDetail(username, currentPage, pageSize);
         return Result.success(bookDetails);
     }
-    // todo 判断逾期
+    // todo 判断逾期 用户管理管理界面更新所有人的逾期 修改VIP状态时更新其他属性
 }

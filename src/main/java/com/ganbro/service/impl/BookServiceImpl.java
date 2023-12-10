@@ -150,6 +150,9 @@ public class BookServiceImpl implements BookService {
             deleteBookDetailDto.setMessage("图书已被借出，不能删除!!!");
             return deleteBookDetailDto;
         }
+        BookInfo bookInfo = bookMapper.selectBookInfo(bookDetail);
+        bookInfo.setAvailableBooks(bookInfo.getAvailableBooks() - 1);
+        bookMapper.updateBookInfo(bookInfo);
         bookMapper.deleteDetailBookById(bookId);
         deleteBookDetailDto.setFlag(true);
         deleteBookDetailDto.setMessage("删除成功!!!");

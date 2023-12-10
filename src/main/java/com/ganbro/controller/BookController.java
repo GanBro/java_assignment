@@ -122,5 +122,5 @@ public class BookController {
         PageData<BookDetail> bookDetails = bookService.searchBookDetail(username, currentPage, pageSize);
         return Result.success(bookDetails);
     }
-    // todo 已被借阅的书籍不能删除 删除图书库存可借阅数量也要改
+    // todo 判断逾期
 }

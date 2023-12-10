@@ -27,4 +27,7 @@ public interface UserMapper {
 
     @Select("SELECT * FROM user_info where username = #{username}")
     UserInfo selectUserInfo(String username);
+
+    @Select("SELECT * FROM user_info where user_id = #{userId}")
+    UserInfo selectUserInfoByUserId(int userId);
 }

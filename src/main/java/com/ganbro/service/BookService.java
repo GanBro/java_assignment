@@ -43,4 +43,6 @@ public interface BookService {
     OverdueDto borrowBook(String username, Integer bookId) throws ParseException;
 
     PageData<BookDetail> searchBookDetail(String username, Integer currentPage, Integer pageSize);
+
+    void returnBook(Integer bookId);
 }

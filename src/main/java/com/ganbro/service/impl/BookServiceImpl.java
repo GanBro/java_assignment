@@ -14,6 +14,7 @@ import com.ganbro.utils.LocalDateTimeUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -232,6 +233,18 @@ public class BookServiceImpl implements BookService {
         return pageData;
     }
 
+    @Override
+    public void returnBook(Integer bookId) {
+        BookDetail bookDetail = bookMapper.selectBookDetailById(bookId);
+        BookInfo bookInfo = bookMapper.selectBookInfo(bookDetail);
+        bookInfo.setAvailableBooks(bookInfo.getAvailableBooks() + 1);
+        int userId = bookDetail.getUserId();
+        UserInfo userInfo = userMapper.selectUserInfoByUserId(userId);
+        userInfo.setBorrowedBooks(userInfo.getBorrowedBooks() - 1);
+        userMapper.updateUserInfo(userInfo);
+        bookMapper.updateBookInfo(bookInfo);
+        bookMapper.returnBookDetails(bookId);
+    }
 
 
 }

@@ -64,6 +64,14 @@
             available_books = #{bookInfo.availableBooks}
         WHERE book_info_id = #{bookInfo.bookInfoId}
     </update>
+    <update id="returnBookDetails">
+        UPDATE book_details
+        SET is_borrowed = 0,
+            user_id = null,
+            start_date = null,
+            due_date = null
+        WHERE book_id = #{bookId}
+    </update>
 
 
 </mapper>

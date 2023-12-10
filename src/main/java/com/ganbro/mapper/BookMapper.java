@@ -83,4 +83,6 @@ public interface BookMapper {
     List<BookDetail> selectBookDetail(Integer userId);
 
     void updateBookInfo(@Param("bookInfo") BookInfo bookInfo);
+
+    void returnBookDetails(@Param("bookId") Integer bookId);
 }

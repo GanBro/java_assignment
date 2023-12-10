@@ -9,6 +9,7 @@ import com.ganbro.domain.entity.BookInfo;
 import com.ganbro.service.BookService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -123,5 +124,13 @@ public class BookController {
         PageData<BookDetail> bookDetails = bookService.searchBookDetail(username, currentPage, pageSize);
         return Result.success(bookDetails);
     }
+
+    @PutMapping("/returnBookDetail/{bookId}")
+    @ApiOperation(value = "归还图书")
+    public Result<Void> returnBook(@PathVariable Integer bookId) {
+        bookService.returnBook(bookId);
+        return Result.success(null, "归还成功");
+    }
+
     // todo 判断逾期 用户管理管理界面更新所有人的逾期 修改VIP状态时更新其他属性
 }

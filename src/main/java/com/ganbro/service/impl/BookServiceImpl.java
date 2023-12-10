@@ -3,6 +3,7 @@ package com.ganbro.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.ganbro.domain.common.PageData;
 import com.ganbro.domain.dto.DeleteBookDetailDto;
+import com.ganbro.domain.dto.EditBookDetailDto;
 import com.ganbro.domain.dto.OverdueDto;
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
@@ -117,7 +118,13 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public boolean updateByBookDetail(BookDetail bookDetail) {
+    public EditBookDetailDto updateByBookDetail(BookDetail bookDetail) {
+        EditBookDetailDto editBookDetailDto = new EditBookDetailDto();
+        if (bookDetail.getUserId() != null) {
+            editBookDetailDto.setFlag(false);
+            editBookDetailDto.setMessage("已被借出的书籍不允许修改!!!");
+            return editBookDetailDto;
+        }
         // todo
         // 判断收本名称或者出版社是否更改，执行逻辑
         BookDetail bookDetail1 = bookMapper.selectBookDetailById(bookDetail.getBookId());
@@ -134,8 +141,10 @@ public class BookServiceImpl implements BookService {
             bookInfo.setAvailableBooks(1);
             bookMapper.insertByBookInfo(bookInfo);
         }
-        int cnt = bookMapper.updateByBookDetail(bookDetail);
-        return cnt > 0;
+        bookMapper.updateByBookDetail(bookDetail);
+        editBookDetailDto.setFlag(true);
+        editBookDetailDto.setMessage("修改成功");
+        return editBookDetailDto;
     }
 
     @Override

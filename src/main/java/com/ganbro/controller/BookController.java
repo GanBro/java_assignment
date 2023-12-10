@@ -3,6 +3,7 @@ package com.ganbro.controller;
 import com.ganbro.domain.common.PageData;
 import com.ganbro.domain.common.Result;
 import com.ganbro.domain.dto.DeleteBookDetailDto;
+import com.ganbro.domain.dto.EditBookDetailDto;
 import com.ganbro.domain.dto.OverdueDto;
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
@@ -67,12 +68,12 @@ public class BookController {
 
     @PutMapping("/detail")
     @ApiOperation(value = "修改图书详细信息")
-    public Result<Void> updateBookDetail(@RequestBody BookDetail bookDetail) {
-        boolean success = bookService.updateByBookDetail(bookDetail);  // 调用 Service 层方法进行更新
-        if (success) {
-            return Result.success(null,"修改图书信息成功");  // 返回成功结果
+    public Result<EditBookDetailDto> updateBookDetail(@RequestBody BookDetail bookDetail) {
+        EditBookDetailDto editBookDetailDto = bookService.updateByBookDetail(bookDetail);
+        if (editBookDetailDto.getFlag()) {
+            return Result.success(null,editBookDetailDto.getMessage());  // 返回成功结果
         } else {
-            return Result.error(null,"修改图书信息失败");  // 返回失败结果
+            return Result.error(null,editBookDetailDto.getMessage());  // 返回失败结果
         }
     }
 

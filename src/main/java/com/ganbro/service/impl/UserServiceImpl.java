@@ -1,6 +1,7 @@
 package com.ganbro.service.impl;
 
 import com.ganbro.domain.common.PageData;
+import com.ganbro.domain.common.ReturnModel;
 import com.ganbro.domain.dto.DeleteUserInfoDto;
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
@@ -15,6 +16,7 @@ import com.github.pagehelper.PageInfo;
 import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final BookMapper bookMapper;
 
     @Override
+    @Transactional
     public PageData<UserInfo> searchUserInfoByPage(String query, int pageNum, int pageSize) {
         // 设置分页参数
         PageHelper.startPage(pageNum, pageSize);
@@ -66,6 +69,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public DeleteUserInfoDto deleteUserById(Integer userId) {
         UserInfo userInfo = userMapper.selectUserInfoByUserId(userId);
         DeleteUserInfoDto deleteUserInfoDto = new DeleteUserInfoDto();
@@ -73,6 +77,7 @@ public class UserServiceImpl implements UserService {
             deleteUserInfoDto.setFlag(false);
             deleteUserInfoDto.setMessage("该用户还有书未归还，不能删除!!!");
         } else {
+            userMapper.deleteUserInfoById(userId);
             userMapper.deleteUserById(userId);
             deleteUserInfoDto.setFlag(true);
             deleteUserInfoDto.setMessage("删除成功");
@@ -81,9 +86,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUserInfo(UserInfo userInfo) {
-        userMapper.updateUsers(userInfo);
-        userMapper.updateUserInfo(userInfo);
+    @Transactional
+    public ReturnModel updateUserInfo(UserInfo userInfo) {
+        ReturnModel returnModel = new ReturnModel();
+        if (userInfo.getBorrowedBooks() > userInfo.getMaxBooksAllowed()) {
+            returnModel.setFlag(false);
+            returnModel.setMessage("修改失败!用户可借阅书本数量不能小于已借阅数量");
+        } else {
+            userMapper.updateUsers(userInfo);
+            userMapper.updateUserInfo(userInfo);
+            returnModel.setFlag(true);
+            returnModel.setMessage("修改成功");
+        }
+        return returnModel;
     }
 
     @Override
@@ -112,6 +127,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updateDueBooks(String username) {
         UserInfo userInfo = userMapper.selectUserInfo(username);
         // 更新逾期状态

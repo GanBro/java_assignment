@@ -1,6 +1,7 @@
 package com.ganbro.service;
 
 import com.ganbro.domain.common.PageData;
+import com.ganbro.domain.common.ReturnModel;
 import com.ganbro.domain.dto.DeleteUserInfoDto;
 import com.ganbro.domain.entity.BookInfo;
 import com.ganbro.domain.entity.User;
@@ -11,7 +12,7 @@ public interface UserService {
 
     DeleteUserInfoDto deleteUserById(Integer userId);
 
-    void updateUserInfo(UserInfo userInfo);
+    ReturnModel updateUserInfo(UserInfo userInfo);
 
     void addUserInfo(UserInfo userInfo);
 

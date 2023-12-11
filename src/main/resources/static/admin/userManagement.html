@@ -85,14 +85,14 @@
                 <el-input v-model="formData.username"></el-input>
             </el-form-item>
             <el-form-item label="用户可借阅的书本数量" prop="maxBooksAllowed" v-if="flag !== 0">
-                <el-input v-model="formData.maxBooksAllowed"></el-input>
+                <el-input v-model="formData.maxBooksAllowed" :disabled="flag !== 0"></el-input>
             </el-form-item>
             <el-form-item label="已经借阅的书本数量" prop="borrowedBooks" v-if="flag !== 0">
 <!--                <el-input v-model="formData.borrowedBooks"></el-input>-->
                 <el-input v-model="formData.borrowedBooks" :disabled="flag !== 0"></el-input>
             </el-form-item>
             <el-form-item label="是否为VIP" prop="isVip">
-                <el-switch v-model="formData.isVip"></el-switch>
+                <el-switch v-model="formData.isVip" @change="changeVipStatus"></el-switch>
             </el-form-item>
             <el-form-item label="逾期未归还的图书数量" prop="overdueBooks" v-if="flag !== 0">
                 <el-input v-model="formData.overdueBooks" :disabled="flag !== 0"></el-input>
@@ -224,6 +224,13 @@
                 this.flag = 0;
                 this.drawer = true;
                 this.formData = {};
+            },
+            changeVipStatus(newValue) {
+                if (newValue) {
+                    this.formData.maxBooksAllowed = 10;
+                } else {
+                    this.formData.maxBooksAllowed = 5;
+                }
             }
         },
         mounted() {

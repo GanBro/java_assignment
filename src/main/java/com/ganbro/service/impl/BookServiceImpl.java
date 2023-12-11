@@ -19,6 +19,7 @@ import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -52,6 +53,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public int addBookInfo(BookInfo bookInfo) {
         return bookMapper.addBookInfo(bookInfo);
     }
@@ -67,11 +69,13 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Integer bookId) {
         bookMapper.deleteById(bookId);
     }
 
     @Override
+    @Transactional
     public boolean updateByBookInfo(BookInfo bookInfo) {
         int sub = bookMapper.selectTotalInventoryById(bookInfo.getBookInfoId()) - bookInfo.getTotalInventory();
         int cnt = bookMapper.updateByBookInfo(bookInfo, sub);
@@ -79,6 +83,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public void insertByBookBookInfo(BookInfo bookInfo) {
         // 默认可借阅数量为库存
         bookInfo.setAvailableBooks(bookInfo.getTotalInventory());
@@ -111,6 +116,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public void deleteBookDetailsByBookId(Integer bookInfoId) {
         BookInfo bookInfo = bookMapper.selectBookInfoById(bookInfoId);
         log.error(String.valueOf(bookInfo));
@@ -118,6 +124,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public EditBookDetailDto updateByBookDetail(BookDetail bookDetail) {
         EditBookDetailDto editBookDetailDto = new EditBookDetailDto();
         if (bookDetail.getUserId() != null) {
@@ -125,7 +132,7 @@ public class BookServiceImpl implements BookService {
             editBookDetailDto.setMessage("已被借出的书籍不允许修改!!!");
             return editBookDetailDto;
         }
-        // todo
+        // todo 没改，图重复
         // 判断收本名称或者出版社是否更改，执行逻辑
         BookDetail bookDetail1 = bookMapper.selectBookDetailById(bookDetail.getBookId());
         // 没更改就不用管, 改了就+1
@@ -148,6 +155,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public void updateBookInfoStockAndAvailabelBooks() {
         List<BookInfo> bookInfos = bookMapper.selectAllBookInfo();
         for (BookInfo bookInfo : bookInfos) {
@@ -158,6 +166,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public DeleteBookDetailDto deleteDetailBookById(Integer bookId) {
         DeleteBookDetailDto deleteBookDetailDto = new DeleteBookDetailDto();
         BookDetail bookDetail = bookMapper.selectBookDetailById(bookId);
@@ -176,6 +185,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public OverdueDto borrowBook(String username, Integer bookId) throws ParseException {
         OverdueDto overdueDto = new OverdueDto();
         BookDetail bookDetail = bookMapper.selectBookDetailById(bookId);
@@ -243,6 +253,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public void returnBook(Integer bookId) {
         BookDetail bookDetail = bookMapper.selectBookDetailById(bookId);
         BookInfo bookInfo = bookMapper.selectBookInfo(bookDetail);

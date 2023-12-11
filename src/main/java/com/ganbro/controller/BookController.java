@@ -139,5 +139,6 @@ public class BookController {
         return Result.success(null, "归还成功");
     }
 
-    // todo 判断逾期 用户管理管理界面更新所有人的逾期 修改VIP状态时更新其他属性
+    // todo 用户管理管理界面更新所有人的逾期 修改VIP状态时更新其他属性 用户借阅书本数量改变时判断是否可改变逻辑
+    // todo 借书页面过期时更新逾期
 }

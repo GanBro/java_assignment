@@ -13,7 +13,7 @@ public interface UserMapper {
     List<UserInfo> searchUserInfoByQuery(String query);
 
     @Delete("DELETE FROM user_info WHERE user_id = #{userId}")
-    void deleteUserById(Integer userId);
+    void deleteUserInfoById(Integer userId);
 
     void updateUserInfo(@Param("userInfo") UserInfo userInfo);
 
@@ -30,4 +30,7 @@ public interface UserMapper {
 
     @Select("SELECT * FROM user_info where user_id = #{userId}")
     UserInfo selectUserInfoByUserId(int userId);
+
+    @Delete("DELETE FROM users WHERE user_id = #{userId}")
+    void deleteUserById(Integer userId);
 }

@@ -3,6 +3,7 @@ package com.ganbro.controller;
 import cn.hutool.core.bean.BeanUtil;
 import com.ganbro.domain.common.PageData;
 import com.ganbro.domain.common.Result;
+import com.ganbro.domain.common.ReturnModel;
 import com.ganbro.domain.dto.DeleteUserInfoDto;
 import com.ganbro.domain.entity.BookInfo;
 import com.ganbro.domain.entity.User;
@@ -54,8 +55,13 @@ public class UserController {
     @PutMapping()
     @ApiOperation(value = "修改借阅人员信息")
     public Result<Void> updateUserInfo(@RequestBody UserInfo userInfo) {
-        userService.updateUserInfo(userInfo);
-        return Result.success(null, "修改成功!");
+        ReturnModel returnModel = userService.updateUserInfo(userInfo);
+        if (returnModel.getFlag()) {
+            return Result.success(null, returnModel.getMessage());
+        } else {
+            return Result.error(null, returnModel.getMessage());
+        }
+
     }
 
     @DeleteMapping("/{userId}")

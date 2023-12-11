@@ -2,21 +2,17 @@ package com.ganbro.controller;
 
 import com.ganbro.domain.common.PageData;
 import com.ganbro.domain.common.Result;
-import com.ganbro.domain.dto.DeleteBookDetailDto;
-import com.ganbro.domain.dto.EditBookDetailDto;
-import com.ganbro.domain.dto.OverdueDto;
+import com.ganbro.domain.common.ReturnModel;
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
 import com.ganbro.service.BookService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
-import java.awt.print.Book;
 import java.text.ParseException;
 import java.util.List;
 
@@ -68,12 +64,12 @@ public class BookController {
 
     @PutMapping("/detail")
     @ApiOperation(value = "修改图书详细信息")
-    public Result<EditBookDetailDto> updateBookDetail(@RequestBody BookDetail bookDetail) {
-        EditBookDetailDto editBookDetailDto = bookService.updateByBookDetail(bookDetail);
-        if (editBookDetailDto.getFlag()) {
-            return Result.success(null,editBookDetailDto.getMessage());  // 返回成功结果
+    public Result<ReturnModel> updateBookDetail(@RequestBody BookDetail bookDetail) {
+        ReturnModel returnModel = bookService.updateByBookDetail(bookDetail);
+        if (returnModel.getFlag()) {
+            return Result.success(null,returnModel.getMessage());  // 返回成功结果
         } else {
-            return Result.error(null,editBookDetailDto.getMessage());  // 返回失败结果
+            return Result.error(null,returnModel.getMessage());  // 返回失败结果
         }
     }
 
@@ -95,11 +91,11 @@ public class BookController {
     @DeleteMapping("/detail/{bookId}")
     @ApiOperation(value = "删除详细图书")
     public Result<Void> deleteDetailBook(@PathVariable Integer bookId) {
-        DeleteBookDetailDto deleteBookDetailDto = bookService.deleteDetailBookById(bookId);
-        if (deleteBookDetailDto.getFlag()) {
-            return Result.success(null, deleteBookDetailDto.getMessage());
+        ReturnModel returnModel = bookService.deleteDetailBookById(bookId);
+        if (returnModel.getFlag()) {
+            return Result.success(null, returnModel.getMessage());
         } else {
-            return Result.error(null, deleteBookDetailDto.getMessage());
+            return Result.error(null, returnModel.getMessage());
         }
     }
 
@@ -114,8 +110,8 @@ public class BookController {
     @PostMapping("/borrow/{username}")
     @ApiOperation(value = "借阅图书")
     public Result<Void> borrowBook(@PathVariable String username, @PathParam("bookId") Integer bookId) throws ParseException {
-        OverdueDto overdueDto = bookService.borrowBook(username, bookId);
-        if (overdueDto.isFlag()) {
+        ReturnModel overdueDto = bookService.borrowBook(username, bookId);
+        if (overdueDto.getFlag()) {
             return Result.success(null, overdueDto.getMessage());
         } else {
             return Result.error(null, overdueDto.getMessage());
@@ -141,4 +137,5 @@ public class BookController {
 
     // todo 用户管理管理界面更新所有人的逾期 修改VIP状态时更新其他属性 用户借阅书本数量改变时判断是否可改变逻辑
     // todo 借书页面过期时更新逾期
+    // todo 用户管理改用户名出错
 }

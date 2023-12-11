@@ -2,9 +2,7 @@ package com.ganbro.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.ganbro.domain.common.PageData;
-import com.ganbro.domain.dto.DeleteBookDetailDto;
-import com.ganbro.domain.dto.EditBookDetailDto;
-import com.ganbro.domain.dto.OverdueDto;
+import com.ganbro.domain.common.ReturnModel;
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
 import com.ganbro.domain.entity.UserInfo;
@@ -15,19 +13,13 @@ import com.ganbro.utils.LocalDateTimeUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -125,12 +117,12 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public EditBookDetailDto updateByBookDetail(BookDetail bookDetail) {
-        EditBookDetailDto editBookDetailDto = new EditBookDetailDto();
+    public ReturnModel updateByBookDetail(BookDetail bookDetail) {
+        ReturnModel returnModel = new ReturnModel();
         if (bookDetail.getUserId() != null) {
-            editBookDetailDto.setFlag(false);
-            editBookDetailDto.setMessage("已被借出的书籍不允许修改!!!");
-            return editBookDetailDto;
+            returnModel.setFlag(false);
+            returnModel.setMessage("已被借出的书籍不允许修改!!!");
+            return returnModel;
         }
         // todo 没改，图重复
         // 判断收本名称或者出版社是否更改，执行逻辑
@@ -149,9 +141,9 @@ public class BookServiceImpl implements BookService {
             bookMapper.insertByBookInfo(bookInfo);
         }
         bookMapper.updateByBookDetail(bookDetail);
-        editBookDetailDto.setFlag(true);
-        editBookDetailDto.setMessage("修改成功");
-        return editBookDetailDto;
+        returnModel.setFlag(true);
+        returnModel.setMessage("修改成功");
+        return returnModel;
     }
 
     @Override
@@ -167,44 +159,44 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public DeleteBookDetailDto deleteDetailBookById(Integer bookId) {
-        DeleteBookDetailDto deleteBookDetailDto = new DeleteBookDetailDto();
+    public ReturnModel deleteDetailBookById(Integer bookId) {
+        ReturnModel returnModel = new ReturnModel();
         BookDetail bookDetail = bookMapper.selectBookDetailById(bookId);
         if (bookDetail.getIsBorrowed()) {
-            deleteBookDetailDto.setFlag(false);
-            deleteBookDetailDto.setMessage("图书已被借出，不能删除!!!");
-            return deleteBookDetailDto;
+            returnModel.setFlag(false);
+            returnModel.setMessage("图书已被借出，不能删除!!!");
+            return returnModel;
         }
         BookInfo bookInfo = bookMapper.selectBookInfo(bookDetail);
         bookInfo.setAvailableBooks(bookInfo.getAvailableBooks() - 1);
         bookMapper.updateBookInfo(bookInfo);
         bookMapper.deleteDetailBookById(bookId);
-        deleteBookDetailDto.setFlag(true);
-        deleteBookDetailDto.setMessage("删除成功!!!");
-        return deleteBookDetailDto;
+        returnModel.setFlag(true);
+        returnModel.setMessage("删除成功!!!");
+        return returnModel;
     }
 
     @Override
     @Transactional
-    public OverdueDto borrowBook(String username, Integer bookId) throws ParseException {
-        OverdueDto overdueDto = new OverdueDto();
+    public ReturnModel borrowBook(String username, Integer bookId) throws ParseException {
+        ReturnModel returnModel = new ReturnModel();
         BookDetail bookDetail = bookMapper.selectBookDetailById(bookId);
         BookInfo bookInfo = bookMapper.selectBookInfo(bookDetail);
         UserInfo userInfo = userMapper.selectUserInfo(username);
         if (bookDetail.getIsBorrowed()) {
-            overdueDto.setMessage("此书已被借阅，请重新挑选!!!");
-            overdueDto.setFlag(false);
-            return overdueDto;
+            returnModel.setMessage("此书已被借阅，请重新挑选!!!");
+            returnModel.setFlag(false);
+            return returnModel;
         }
         if (userInfo.getOverdueBooks() > 0) {
-            overdueDto.setMessage("您已逾期,禁止借书!!!");
-            overdueDto.setFlag(false);
-            return overdueDto;
+            returnModel.setMessage("您已逾期,禁止借书!!!");
+            returnModel.setFlag(false);
+            return returnModel;
         }
         if (bookInfo.getAvailableBooks() <= 0) {
-            overdueDto.setMessage("书已借完!!!");
-            overdueDto.setFlag(false);
-            return overdueDto;
+            returnModel.setMessage("书已借完!!!");
+            returnModel.setFlag(false);
+            return returnModel;
         }
         bookInfo.setAvailableBooks(bookInfo.getAvailableBooks() - 1); // 更新可借阅的书
         bookMapper.updateBookInfo(bookInfo);
@@ -222,13 +214,13 @@ public class BookServiceImpl implements BookService {
             bookMapper.updateByBookDetail(bookDetail);
             userInfo.setBorrowedBooks(userInfo.getBorrowedBooks() + 1); // 借一本
             userMapper.updateUserInfo(userInfo);
-            overdueDto.setFlag(true);
-            overdueDto.setMessage("借书成功!!!");
+            returnModel.setFlag(true);
+            returnModel.setMessage("借书成功!!!");
         } else {
-            overdueDto.setMessage("您已超出最大可借数量!!!");
-            overdueDto.setFlag(false);
+            returnModel.setMessage("您已超出最大可借数量!!!");
+            returnModel.setFlag(false);
         }
-        return overdueDto;
+        return returnModel;
     }
 
     @Override

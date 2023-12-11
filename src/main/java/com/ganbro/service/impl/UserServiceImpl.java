@@ -2,18 +2,14 @@ package com.ganbro.service.impl;
 
 import com.ganbro.domain.common.PageData;
 import com.ganbro.domain.common.ReturnModel;
-import com.ganbro.domain.dto.DeleteUserInfoDto;
 import com.ganbro.domain.entity.BookDetail;
-import com.ganbro.domain.entity.BookInfo;
 import com.ganbro.domain.entity.User;
 import com.ganbro.domain.entity.UserInfo;
 import com.ganbro.mapper.BookMapper;
 import com.ganbro.mapper.UserMapper;
 import com.ganbro.service.UserService;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,19 +66,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public DeleteUserInfoDto deleteUserById(Integer userId) {
+    public ReturnModel deleteUserById(Integer userId) {
         UserInfo userInfo = userMapper.selectUserInfoByUserId(userId);
-        DeleteUserInfoDto deleteUserInfoDto = new DeleteUserInfoDto();
+        ReturnModel returnModel = new ReturnModel();
         if (userInfo.getBorrowedBooks() > 0) {
-            deleteUserInfoDto.setFlag(false);
-            deleteUserInfoDto.setMessage("该用户还有书未归还，不能删除!!!");
+            returnModel.setFlag(false);
+            returnModel.setMessage("该用户还有书未归还，不能删除!!!");
         } else {
             userMapper.deleteUserInfoById(userId);
             userMapper.deleteUserById(userId);
-            deleteUserInfoDto.setFlag(true);
-            deleteUserInfoDto.setMessage("删除成功");
+            returnModel.setFlag(true);
+            returnModel.setMessage("删除成功");
         }
-        return deleteUserInfoDto;
+        return returnModel;
     }
 
     @Override

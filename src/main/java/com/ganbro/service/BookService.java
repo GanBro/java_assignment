@@ -1,14 +1,9 @@
 package com.ganbro.service;
 
 import com.ganbro.domain.common.PageData;
-import com.ganbro.domain.dto.DeleteBookDetailDto;
-import com.ganbro.domain.dto.EditBookDetailDto;
-import com.ganbro.domain.dto.OverdueDto;
+import com.ganbro.domain.common.ReturnModel;
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
-import io.swagger.models.auth.In;
-import org.apache.ibatis.annotations.Select;
-import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.util.List;
@@ -34,14 +29,14 @@ public interface BookService {
 
     void deleteBookDetailsByBookId(Integer bookInfoId);
 
-    EditBookDetailDto updateByBookDetail(BookDetail bookDetail);
+    ReturnModel updateByBookDetail(BookDetail bookDetail);
 
     void updateBookInfoStockAndAvailabelBooks();
 
-    DeleteBookDetailDto deleteDetailBookById(Integer bookId);
+    ReturnModel deleteDetailBookById(Integer bookId);
 
     /*返回消息*/
-    OverdueDto borrowBook(String username, Integer bookId) throws ParseException;
+    ReturnModel borrowBook(String username, Integer bookId) throws ParseException;
 
     PageData<BookDetail> searchBookDetail(String username, Integer currentPage, Integer pageSize);
 

@@ -85,4 +85,7 @@ public interface BookMapper {
     void updateBookInfo(@Param("bookInfo") BookInfo bookInfo);
 
     void returnBookDetails(@Param("bookId") Integer bookId);
+
+    @Delete("DELETE FROM book_info WHERE book_info_id = #{bookInfoId}")
+    void deleteBookInfo(BookInfo bookInfo);
 }

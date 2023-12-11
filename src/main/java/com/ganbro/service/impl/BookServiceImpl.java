@@ -132,13 +132,37 @@ public class BookServiceImpl implements BookService {
                 bookDetail1.getPublisher().equals(bookDetail.getPublisher())) {
             // 不用管
         } else {
+            // 1. 修改原来的库存
+            // 1.1 找到原来的BookDetail
+            BookDetail bookDetail2 = bookMapper.selectBookDetailById(bookDetail.getBookId());
+            // 1.2 找到原来的BookInfo
+            BookInfo bookInfo1 = bookMapper.selectBookInfo(bookDetail2);
+            // 1.3 修改库存
+            bookInfo1.setAvailableBooks(bookInfo1.getAvailableBooks() - 1);
+            bookInfo1.setTotalInventory(bookInfo1.getTotalInventory() - 1);
+            // 1.4 判断删除后库存是否为0，如果是就删除，否则修改
+            if (bookInfo1.getAvailableBooks() == 0) {
+                bookMapper.deleteBookInfo(bookInfo1);
+            } else {
+                bookMapper.updateBookInfo(bookInfo1);
+            }
+            // 2. 新增图书逻辑
             BookInfo bookInfo = new BookInfo();
             bookInfo.setBookName(bookDetail.getBookName());
             bookInfo.setPublisher(bookDetail.getPublisher());
             bookInfo.setPublishDate(bookDetail.getPublishDate());
             bookInfo.setBookInfoId(1);
             bookInfo.setAvailableBooks(1);
-            bookMapper.insertByBookInfo(bookInfo);
+            BookInfo bookInfo2 = bookMapper.selectBookInfo(bookDetail); // 原来的bookInfo
+            if (bookInfo2 != null) {
+                // 存在图书分类就把原来的BookInfo增加
+                bookInfo2.setAvailableBooks(bookInfo2.getAvailableBooks() + 1);
+                bookInfo2.setTotalInventory(bookInfo2.getTotalInventory() + 1);
+                bookMapper.updateBookInfo(bookInfo2);
+            } else {
+                // 否则新增
+                bookMapper.insertByBookInfo(bookInfo);
+            }
         }
         bookMapper.updateByBookDetail(bookDetail);
         returnModel.setFlag(true);
@@ -171,6 +195,9 @@ public class BookServiceImpl implements BookService {
         bookInfo.setAvailableBooks(bookInfo.getAvailableBooks() - 1);
         bookMapper.updateBookInfo(bookInfo);
         bookMapper.deleteDetailBookById(bookId);
+        if (bookInfo.getAvailableBooks() == 0) {
+            bookMapper.deleteBookInfo(bookInfo);
+        }
         returnModel.setFlag(true);
         returnModel.setMessage("删除成功!!!");
         return returnModel;

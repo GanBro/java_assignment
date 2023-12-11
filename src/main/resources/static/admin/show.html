@@ -194,7 +194,7 @@
         methods: {
             // 修改 searchBooks 方法
             searchBooks(currentPage, pageSize) {
-                axios.get(`http://localhost:8080/api/books/searchByPage?query=${this.searchKeyword}&pageNum=${currentPage}&pageSize=${pageSize}`)
+                axios.get(`/api/books/searchByPage?query=${this.searchKeyword}&pageNum=${currentPage}&pageSize=${pageSize}`)
                     .then(response => {
                         const result = response.data;
                         if (result.code === 0) {
@@ -219,7 +219,7 @@
                 // 跳转到书本详细信息页面...
                 this.detailDrawer = true
                 // detailDrawer回显
-                axios.get(`http://localhost:8080/api/books/${bookDetail.bookInfoId}/details`)
+                axios.get(`/api/books/${bookDetail.bookInfoId}/details`)
                     .then(response => {
                         const result = response.data;
                         if (result.code === 0 && result.data) {
@@ -246,7 +246,7 @@
                     type: 'warning'
                 }).then(() => {
                     // 发起删除图书的请求
-                    axios.delete(`http://localhost:8080/api/books/${bookInfo.bookInfoId}`)
+                    axios.delete(`/api/books/${bookInfo.bookInfoId}`)
                         .then(response => {
                             const result = response.data;
                             if (result.code === 0) {
@@ -296,7 +296,7 @@
                 if (this.flag === 0) {
                     this.formData.publishDate = moment(this.formData.publishDate).format('YYYY-MM-DD')
                     // console.log(this.formData)
-                    axios.post('http://localhost:8080/api/books', this.formData)
+                    axios.post('/api/books', this.formData)
                         .then(response => {
                             const result = response.data;
                             if (result.code === 0) {
@@ -314,7 +314,7 @@
                     this.flag = 0
                     // this.formData.publishDate = moment(this.formData.publishDate).format('YYYY-MM-DD')
                     // 编辑的日期是正常的不用改
-                    axios.put('http://localhost:8080/api/books', this.formData)
+                    axios.put('/api/books', this.formData)
                         .then(response => {
                             const result = response.data;
                             if (result.code === 0) {
@@ -353,7 +353,7 @@
                     type: 'warning'
                 }).then(() => {
                     // 发起删除图书的请求
-                    axios.delete(`http://localhost:8080/api/books/detail/${bookDetail.bookId}`)
+                    axios.delete(`/api/books/detail/${bookDetail.bookId}`)
                         .then(response => {
                             const result = response.data;
                             if (result.code === 0) {
@@ -381,6 +381,7 @@
 
         },
         mounted() {
+            axios.defaults.baseURL = 'http://localhost:8080'; // 设置URL前缀
             this.formData = {};
             this.searchBooks(this.currentPage, this.pageSize);
         },

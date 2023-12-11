@@ -60,7 +60,8 @@
                 formData: {},
             };
         },
-        created() {
+        mounted() {
+            axios.defaults.baseURL = 'http://localhost:8080'; // 设置URL前缀
             // 从 URL 中获取参数并解析数据
             const urlParams = new URLSearchParams(window.location.search);
             const dataParam = urlParams.get('data');
@@ -69,7 +70,7 @@
         },
         methods: {
             saveData() {
-                axios.put('http://localhost:8080/api/books/detail', this.formData)
+                axios.put('/api/books/detail', this.formData)
                     .then(response => {
                         const result = response.data;
                         if (result.code === 0) {

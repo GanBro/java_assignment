@@ -137,7 +137,7 @@
         },
         methods: {
             searchUsers(currentPage, pageSize) {
-                axios.get(`http://localhost:8080/api/users/searchByPage?query=${this.searchKeyword}&pageNum=${currentPage}&pageSize=${pageSize}`)
+                axios.get(`/api/users/searchByPage?query=${this.searchKeyword}&pageNum=${currentPage}&pageSize=${pageSize}`)
                     .then(response => {
                         const result = response.data;
                         this.pagedUserList = result.data.list;
@@ -162,7 +162,7 @@
             },
             handleSave() {
                 if (this.flag === 1) {
-                    axios.put(`http://localhost:8080/api/users`, this.formData)
+                    axios.put(`/api/users`, this.formData)
                         .then(response => {
                             this.$message.success(response.data.message);
                             this.searchUsers(this.currentPage, this.pageSize);
@@ -173,7 +173,7 @@
                             console.log(error);
                         });
                 } else if (this.flag === 0) {
-                    axios.post(`http://localhost:8080/api/users`, this.formData)
+                    axios.post(`/api/users`, this.formData)
                         .then(response => {
                             this.$message.success(response.data.message);
                             this.searchUsers(this.currentPage, this.pageSize);
@@ -195,7 +195,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    axios.delete(`http://localhost:8080/api/users/${userInfo.userId}`)
+                    axios.delete(`/api/users/${userInfo.userId}`)
                         .then(response => {
                             const result = response.data;
                             if (result.code === 0) {
@@ -234,6 +234,7 @@
             }
         },
         mounted() {
+            axios.defaults.baseURL = 'http://localhost:8080'; // 设置URL前缀
             this.searchUsers(this.currentPage, this.pageSize);
         },
         computed: {

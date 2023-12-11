@@ -87,6 +87,7 @@
             };
         },
         mounted() {
+            axios.defaults.baseURL = 'http://localhost:8080'; // 设置URL前缀
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
             this.username = urlParams.get('username');
@@ -102,7 +103,7 @@
                 }
             },
             initData() {
-                axios.get(`http://localhost:8080/api/users/${this.username}`)
+                axios.get(`/api/users/${this.username}`)
                     .then(response => {
                         const result = response.data; // 获取整个Result对象
                         if (result.code === 0) { // 判断操作结果代码
@@ -117,7 +118,7 @@
                     });
             },
             search(currentPage, pageSize) {
-                axios.get(`http://localhost:8080/api/books/searchBookDetail/${this.username}?currentPage=${currentPage}&pageSize=${pageSize}`)
+                axios.get(`/api/books/searchBookDetail/${this.username}?currentPage=${currentPage}&pageSize=${pageSize}`)
                     .then(response => {
                         const result = response.data; // 获取整个Result对象
                         if (result.code === 0) { // 判断操作结果代码
@@ -136,7 +137,7 @@
                 this.search(this.currentPage, this.pageSize);
             },
             returnBook(bookDetail) {
-                axios.put(`http://localhost:8080/api/books/returnBookDetail/${bookDetail.bookId}`)
+                axios.put(`/api/books/returnBookDetail/${bookDetail.bookId}`)
                     .then(response => {
                         const result = response.data; // 获取整个Result对象
                         if (result.code === 0) { // 判断操作结果代码

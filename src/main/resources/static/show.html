@@ -189,7 +189,7 @@
             // 修改 searchBooks 方法
             searchBooks(currentPage, pageSize) {
                 console.log(currentPage, pageSize)
-                axios.get(`http://localhost:8080/api/books/searchByPage?query=${this.searchKeyword}&pageNum=${currentPage}&pageSize=${pageSize}`)
+                axios.get(`/api/books/searchByPage?query=${this.searchKeyword}&pageNum=${currentPage}&pageSize=${pageSize}`)
                     .then(response => {
                         const result = response.data;
                         if (result.code === 0) {
@@ -209,7 +209,7 @@
                 // 跳转到书本详细信息页面...
                 this.detailDrawer = true
                 // detailDrawer回显
-                axios.get(`http://localhost:8080/api/books/${bookDetail.bookInfoId}/details`)
+                axios.get(`/api/books/${bookDetail.bookInfoId}/details`)
                     .then(response => {
                         const result = response.data;
                         if (result.code === 0 && result.data) {
@@ -261,7 +261,7 @@
             handleBorrow(bookDetail) {
                 const urlParams = new URLSearchParams(window.location.search);
                 const username = urlParams.get('username');
-                axios.post(`http://localhost:8080/api/books/borrow/${username}?bookId=${bookDetail.bookId}`)
+                axios.post(`/api/books/borrow/${username}?bookId=${bookDetail.bookId}`)
                     .then(response => {
                         const result = response.data;
                         if (result.code === 0) {
@@ -282,7 +282,7 @@
             },
             // 更新逾期数量
             updateOverdue(username) {
-                axios.put(`http://localhost:8080/api/users/updateDueBooks?username=${username}`)
+                axios.put(`/api/users/updateDueBooks?username=${username}`)
                     .then(response => {
                         // ...
                     })
@@ -292,6 +292,7 @@
             },
         },
         mounted() {
+            axios.defaults.baseURL = 'http://localhost:8080'; // 设置URL前缀
             const urlParams = new URLSearchParams(window.location.search);
             this.username = urlParams.get('username');
             this.formData = {};

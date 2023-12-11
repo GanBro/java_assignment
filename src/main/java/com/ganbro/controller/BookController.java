@@ -19,7 +19,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:63342")
 @Slf4j
 @Api(tags = "图书接口")
 public class BookController {

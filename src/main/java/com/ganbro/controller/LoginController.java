@@ -15,7 +15,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:63342")
 @Api(tags = "登录接口")
 @Slf4j
 public class LoginController {

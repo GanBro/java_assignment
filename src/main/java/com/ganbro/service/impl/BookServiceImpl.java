@@ -195,7 +195,7 @@ public class BookServiceImpl implements BookService {
         bookInfo.setAvailableBooks(bookInfo.getAvailableBooks() - 1);
         bookMapper.updateBookInfo(bookInfo);
         bookMapper.deleteDetailBookById(bookId);
-        if (bookInfo.getAvailableBooks() == 0) {
+        if (bookInfo.getTotalInventory() == 0) {
             bookMapper.deleteBookInfo(bookInfo);
         }
         returnModel.setFlag(true);

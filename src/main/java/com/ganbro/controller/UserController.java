@@ -16,7 +16,6 @@ import javax.websocket.server.PathParam;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:63342")
 @Api(tags = "用户管理接口")
 public class UserController {
 

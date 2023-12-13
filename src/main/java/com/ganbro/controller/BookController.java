@@ -79,12 +79,12 @@ public class BookController {
         List<BookDetail> bookDetails = bookService.selectBookDetailByBookInfo(bookInfoId);
         for (BookDetail bookDetail : bookDetails) {
             if (bookDetail.getIsBorrowed()) {
-                return Result.error(null, "图书" + name + "已被借出，无法删除");
+                return Result.error(null, "存在图书已被借出，无法删除!");
             }
         }
         bookService.deleteBookDetailsByBookId(bookInfoId);
         bookService.deleteById(bookInfoId);
-        return Result.success(null, "删除图书" + name + "成功");
+        return Result.success(null, "删除图书成功!");
     }
 
     @DeleteMapping("/detail/{bookId}")

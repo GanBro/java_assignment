@@ -164,10 +164,15 @@
                 if (this.flag === 1) {
                     axios.put(`/api/users`, this.formData)
                         .then(response => {
-                            this.$message.success(response.data.message);
-                            this.searchUsers(this.currentPage, this.pageSize);
-                            this.drawer = false;
-                            this.formData = {};
+                            const result = response.data;
+                            if (result.code === 0) {
+                                this.$message.success(result.message);
+                                this.searchUsers(this.currentPage, this.pageSize);
+                                this.drawer = false;
+                                this.formData = {};
+                            } else {
+                                this.$message.error(result.message);
+                            }
                         })
                         .catch(error => {
                             console.log(error);
@@ -175,10 +180,15 @@
                 } else if (this.flag === 0) {
                     axios.post(`/api/users`, this.formData)
                         .then(response => {
-                            this.$message.success(response.data.message);
-                            this.searchUsers(this.currentPage, this.pageSize);
-                            this.drawer = false;
-                            this.formData = {};
+                            const result = response.data;
+                            if (result.code === 0) {
+                                this.$message.success(result.message);
+                                this.searchUsers(this.currentPage, this.pageSize);
+                                this.drawer = false;
+                                this.formData = {};
+                            } else {
+                                this.$message.error(result.message);
+                            }
                         })
                         .catch(error => {
                             console.log(error);

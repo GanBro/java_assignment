@@ -44,8 +44,13 @@ public class UserController {
     @PostMapping()
     @ApiOperation(value = "添加借阅人员信息")
     public Result<Void> addUserInfo(@RequestBody UserInfo userInfo) {
-        userService.addUserInfo(userInfo);
-        return Result.success(null, "添加成功!");
+        ReturnModel returnModel = userService.addUserInfo(userInfo);
+        if (returnModel.getFlag()) {
+            return Result.success(null, returnModel.getMessage());
+        } else {
+            return Result.error(null, returnModel.getMessage());
+        }
+
     }
 
     @PutMapping()

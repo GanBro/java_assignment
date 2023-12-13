@@ -1,5 +1,6 @@
 package com.ganbro.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.ganbro.domain.common.PageData;
 import com.ganbro.domain.common.ReturnModel;
 import com.ganbro.domain.entity.BookDetail;
@@ -92,13 +93,23 @@ public class UserServiceImpl implements UserService {
             userMapper.updateUsers(userInfo);
             userMapper.updateUserInfo(userInfo);
             returnModel.setFlag(true);
-            returnModel.setMessage("修改成功");
+            returnModel.setMessage("修改用户信息成功");
         }
         return returnModel;
     }
 
     @Override
-    public void addUserInfo(UserInfo userInfo) {
+    public ReturnModel addUserInfo(UserInfo userInfo) {
+        ReturnModel returnModel = new ReturnModel();
+        UserInfo userInfo1 = userMapper.selectUserInfo(userInfo.getUsername());
+        if (BeanUtil.isNotEmpty(userInfo1)) {
+            returnModel.setFlag(false);
+            returnModel.setMessage("存在该用户，请勿重复添加!!!");
+            return returnModel;
+        }
+        returnModel.setFlag(true);
+        returnModel.setMessage("添加用户信息成功!");
+
         if (userInfo.getIsVip() == null) {
             userInfo.setIsVip(false);
             userInfo.setMaxBooksAllowed(5);
@@ -115,6 +126,7 @@ public class UserServiceImpl implements UserService {
         Integer id = user.getUserId();
         userInfo.setUserId(id);
         userMapper.insertUserInfo(userInfo);
+        return returnModel;
     }
 
     @Override

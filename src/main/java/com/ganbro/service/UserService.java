@@ -11,7 +11,7 @@ public interface UserService {
 
     ReturnModel updateUserInfo(UserInfo userInfo);
 
-    void addUserInfo(UserInfo userInfo);
+    ReturnModel addUserInfo(UserInfo userInfo);
 
     UserInfo selectUserInfo(String username);
 

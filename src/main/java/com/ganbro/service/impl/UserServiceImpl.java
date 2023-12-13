@@ -50,7 +50,6 @@ public class UserServiceImpl implements UserService {
             userInfo.setOverdueBooks(overdueBooks); // 设置到期的书
             userMapper.updateUserInfo(userInfo);
         }
-
         // 更新后再执行一次
         List<UserInfo> userList = userMapper.searchUserInfoByQuery(query);
 
@@ -150,7 +149,21 @@ public class UserServiceImpl implements UserService {
                 overdueBooks = overdueBooks + 1;
             }
         }
-        userInfo.setOverdueBooks(overdueBooks); // 设置到期的书
+        userInfo.setOverdueBooks(overdueBooks); // 设置到期的书(已逾期的书不能消除)
         userMapper.updateUserInfo(userInfo);
+    }
+
+    @Override
+    public void resetDueBooks(String username) {
+        UserInfo userInfo = userMapper.selectUserInfo(username);
+        int userId = userInfo.getUserId();
+        List<BookDetail> bookDetails = bookMapper.selectBookDetail(userId);
+        for (BookDetail bookDetail: bookDetails) {
+            bookDetail.setIsBorrowed(false);
+            bookDetail.setStartDate(null);
+            bookDetail.setUserId(null);
+            bookDetail.setDueDate(null);
+            bookMapper.updateByBookDetail(bookDetail);
+        }
     }
 }

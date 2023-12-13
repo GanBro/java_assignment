@@ -29,7 +29,6 @@ public class BookController {
     @GetMapping("/searchByPage")
     @ApiOperation(value = "分页搜索图书信息")
     public Result<PageData<BookInfo>> searchBooksByPage(String query, int pageNum, int pageSize) {
-        log.error(query);
         // 更新所有BookInfo的库存和可借阅数量
         bookService.updateBookInfoStockAndAvailabelBooks();
         List<BookInfo> books = bookService.searchBooksByPage(query, pageNum, pageSize);
@@ -130,8 +129,12 @@ public class BookController {
     @PutMapping("/returnBookDetail/{bookId}")
     @ApiOperation(value = "归还图书")
     public Result<Void> returnBook(@PathVariable Integer bookId) {
-        bookService.returnBook(bookId);
-        return Result.success(null, "归还成功");
+        ReturnModel returnModel = bookService.returnBook(bookId);
+        if (returnModel.getFlag()) {
+            return Result.success(null, returnModel.getMessage());
+        } else {
+            return Result.error(null, returnModel.getMessage());
+        }
     }
 
     // todo 用户管理管理界面更新所有人的逾期 修改VIP状态时更新其他属性 用户借阅书本数量改变时判断是否可改变逻辑

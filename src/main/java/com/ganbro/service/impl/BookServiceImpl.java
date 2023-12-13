@@ -273,16 +273,27 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void returnBook(Integer bookId) {
+    public ReturnModel returnBook(Integer bookId) {
+        ReturnModel returnModel = new ReturnModel();
         BookDetail bookDetail = bookMapper.selectBookDetailById(bookId);
         BookInfo bookInfo = bookMapper.selectBookInfo(bookDetail);
         bookInfo.setAvailableBooks(bookInfo.getAvailableBooks() + 1);
         int userId = bookDetail.getUserId();
         UserInfo userInfo = userMapper.selectUserInfoByUserId(userId);
         userInfo.setBorrowedBooks(userInfo.getBorrowedBooks() - 1);
+        // 如果归还的图书是逾期的图书，则不能归还
+        String dueDateString = bookDetail.getDueDate();
+        if (dueDateString.compareTo(LocalDateTime.now().toString()) < 0) {
+            returnModel.setFlag(false);
+            returnModel.setMessage("该图书已逾期，不能归还，请联系管理员!!!");
+            return returnModel;
+        }
         userMapper.updateUserInfo(userInfo);
         bookMapper.updateBookInfo(bookInfo);
         bookMapper.returnBookDetails(bookId);
+        returnModel.setFlag(true);
+        returnModel.setMessage("归还成功！");
+        return returnModel;
     }
 
 

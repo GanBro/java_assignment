@@ -81,6 +81,13 @@ public class UserController {
     @ApiOperation(value = "更新逾期图书")
     public Result<Void> updateDueBooks(@PathParam("username") String username) {
         userService.updateDueBooks(username);
-        return Result.success(null, "更新成功");
+        return Result.success(null, "更新成功!");
+    }
+
+    @PutMapping("/resetDueBooks")
+    @ApiOperation(value = "重置逾期图书")
+    public Result<Void> resetDueBooks(@PathParam("username") String username) {
+        userService.resetDueBooks(username);
+        return Result.success(null, "重置成功!");
     }
 }

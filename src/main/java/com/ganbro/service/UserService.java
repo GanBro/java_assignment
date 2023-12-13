@@ -16,4 +16,6 @@ public interface UserService {
     UserInfo selectUserInfo(String username);
 
     void updateDueBooks(String username);
+
+    void resetDueBooks(String username);
 }

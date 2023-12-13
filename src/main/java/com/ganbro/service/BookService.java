@@ -40,5 +40,5 @@ public interface BookService {
 
     PageData<BookDetail> searchBookDetail(String username, Integer currentPage, Integer pageSize);
 
-    void returnBook(Integer bookId);
+    ReturnModel returnBook(Integer bookId);
 }

@@ -245,8 +245,21 @@
             },
             resetOverdue() {
                 this.formData.overdueBooks = 0;
-
+                this.$forceUpdate();  // 强制刷新页面
+                axios.put(`/api/users/resetDueBooks?username=${this.formData.username}`)
+                    .then(response => {
+                        const result = response.data;
+                        if (result.code === 0) {
+                            this.$message.success(result.message);
+                        } else {
+                            this.$message.error(result.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
             }
+
         },
         mounted() {
             axios.defaults.baseURL = 'http://localhost:8080'; // 设置URL前缀

@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.ganbro.domain.common.PageData;
 import com.ganbro.domain.common.ReturnModel;
 import com.ganbro.domain.entity.BookDetail;
+import com.ganbro.domain.entity.BookInfo;
 import com.ganbro.domain.entity.User;
 import com.ganbro.domain.entity.UserInfo;
 import com.ganbro.mapper.BookMapper;
@@ -119,7 +120,8 @@ public class UserServiceImpl implements UserService {
         userInfo.setOverdueBooks(0);
         User user = new User();
         user.setUsername(userInfo.getUsername());
-        user.setPassword(user.getUsername());
+//        user.setPassword(user.getUsername());
+        user.setPassword("123456");
         user.setIsAdmin(false); // 默认为普通用户
         userMapper.insertUser(user);
         Integer id = user.getUserId();
@@ -158,12 +160,22 @@ public class UserServiceImpl implements UserService {
         UserInfo userInfo = userMapper.selectUserInfo(username);
         int userId = userInfo.getUserId();
         List<BookDetail> bookDetails = bookMapper.selectBookDetail(userId);
+        BookInfo bookInfo = bookMapper.selectBookInfo(bookDetails.get(0)); // 通过一个detail找到bookInfo
         for (BookDetail bookDetail: bookDetails) {
-            bookDetail.setIsBorrowed(false);
-            bookDetail.setStartDate(null);
-            bookDetail.setUserId(null);
-            bookDetail.setDueDate(null);
-            bookMapper.updateByBookDetail(bookDetail);
+            LocalDateTime time = LocalDateTime.now();
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate dueDate = LocalDate.parse(bookDetail.getDueDate(), dateFormatter);
+            if (dueDate.isBefore(time.toLocalDate())) {
+                bookDetail.setIsBorrowed(false);
+                bookDetail.setStartDate(null);
+                bookDetail.setUserId(null);
+                bookDetail.setDueDate(null);
+                bookMapper.updateByBookDetail(bookDetail);
+                userInfo.setBorrowedBooks(userInfo.getBorrowedBooks() - 1); // 还一本
+                bookInfo.setAvailableBooks(bookInfo.getAvailableBooks() + 1); // 库存多一本
+            }
         }
+        bookMapper.updateBookInfo(bookInfo);
+        userMapper.updateUserInfo(userInfo);
     }
 }

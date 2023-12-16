@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>用户管理</title>
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!--    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
+    <link rel="stylesheet" href="../css/element.css">
     <style>
         .custom-drawer {
             height: 200px;
@@ -109,8 +109,12 @@
 </div>
 
 <!-- 引入Vue.js和Element UI的CDN链接 -->
-<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>-->
+<script src="../js/vue@2.js"></script>
+<!--<script src="https://unpkg.com/element-ui/lib/index.js"></script>-->
+<script src="../js/element.js"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>-->
+<script src="../js/axios.js"></script>
 
 <script>
     new Vue({
@@ -244,6 +248,7 @@
                 }
             },
             resetOverdue() {
+                this.formData.borrowedBooks = this.formData.borrowedBooks - this.formData.overdueBooks;
                 this.formData.overdueBooks = 0;
                 this.$forceUpdate();  // 强制刷新页面
                 axios.put(`/api/users/resetDueBooks?username=${this.formData.username}`)

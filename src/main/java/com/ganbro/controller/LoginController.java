@@ -49,7 +49,7 @@ public class LoginController {
         }
         if (user.getPassword().equals(password)) {
             if (flag == 0) {
-                return Result.error("没有管理员权限!!!");
+                return Result.error(null, "没有管理员权限!!!");
             }
             return Result.success("登录成功");
         }

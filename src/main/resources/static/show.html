@@ -26,14 +26,14 @@
         </el-header>
         <el-main>
             <el-row :gutter="20">
-                <el-col :span="12">
+                <el-col :span="8">
                     <el-input
                             v-model="searchKeyword"
                             placeholder="请输入关键字"
                             prefix-icon="el-icon-search">
                     </el-input>
                 </el-col>
-                <el-col :span="6">
+                <el-col :span="2">
                     <el-button @click="searchBooks(currentPage, pageSize)" type="primary" icon="el-icon-search">搜索</el-button>
                 </el-col>
             </el-row>

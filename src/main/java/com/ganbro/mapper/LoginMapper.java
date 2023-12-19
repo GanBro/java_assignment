@@ -9,7 +9,7 @@ public interface LoginMapper {
     @Select("select password from users where username = #{username}")
     String findPasswordByUsername(String username);
 
-    @Select("select isAdmin from users where username = #{username}")
+    @Select("select is_admin from users where username = #{username}")
     int findIsAdminByUsername(String username);
 
 /*    @Select("select  * from users where username = #{username} and password = #{password}")

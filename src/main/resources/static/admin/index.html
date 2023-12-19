@@ -62,8 +62,7 @@
         },
         methods: {
             login() {
-                // 发送 POST 请求到后端
-                axios.post('/api/login', this.loginForm)
+                axios.post('/api/adminlogin', this.loginForm)
                     .then(response => {
                         // 登录成功的处理逻辑
                         const result = response.data;

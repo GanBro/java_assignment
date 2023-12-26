@@ -28,7 +28,7 @@
                         <el-input v-model="loginForm.email" placeholder="请输入QQ邮箱" style="width: 400px;">
                             <template slot="append">
                                 <el-button type="primary" :disabled="isSendingCode" :style="{backgroundColor: isSendingCode ? '#ccc' : '#409EFF', color: '#fff'}" @click="sendVerificationCode">
-                                    {{ isSendingCode ? countDown + '秒后可再次调用' : '发送验证码' }}
+                                    {{ isSendingCode ? countDown + '秒后可再次发送' : '发送验证码' }}
                                 </el-button>
                             </template>
                         </el-input>
@@ -108,15 +108,17 @@
                     });
             },
             startCountDown() {
-                let timer = setInterval(() => {
+                clearInterval(this.timer); // 清除之前的计时器
+                this.timer = setInterval(() => {
                     console.log("调用")
                     this.countDown--;
                     if (this.countDown === 0) {
-                        clearInterval(timer);
+                        clearInterval(this.timer);
                         this.isSendingCode = false; // 计时结束后将状态设回false，允许再次发送验证码
                     }
                 }, 1000);
             },
+
             login() {
                 // 验证码校验
                 if (this.loginForm.code !== this.verificationCode) {

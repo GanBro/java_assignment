@@ -76,7 +76,7 @@
                 },
                 verificationCode: '', // 保存验证码
                 isSendingCode: false, // 是否正在发送验证码
-                countDown: 30, // 倒计时剩余时间
+                countDown: 10, // 倒计时剩余时间
             };
         },
         methods: {
@@ -108,12 +108,15 @@
                     });
             },
             startCountDown() {
-                clearInterval(this.timer); // 清除之前的计时器
-                this.timer = setInterval(() => {
+                this.countDown = 10; // 重置倒计时为10秒
+                this.isSendingCode = true; // 设置为正在发送验证码状态
+
+                let timer = setInterval(() => {
                     console.log("调用")
-                    this.countDown--;
-                    if (this.countDown === 0) {
-                        clearInterval(this.timer);
+                    if (this.countDown > 0) {
+                        this.countDown--;
+                    } else {
+                        clearInterval(timer);
                         this.isSendingCode = false; // 计时结束后将状态设回false，允许再次发送验证码
                     }
                 }, 1000);

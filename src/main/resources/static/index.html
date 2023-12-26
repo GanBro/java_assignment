@@ -8,6 +8,7 @@
     <!-- 引入 Vue.js 和 Element UI 的 CDN 链接 -->
 <!--    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
     <link rel="stylesheet" href="./css/element.css">
+    <script src="https://g.alicdn.com/AWSC/AWSC/awsc.js"></script>
 </head>
 
 <body>
@@ -15,15 +16,17 @@
 <div id="app">
     <el-container style="height: 100vh;">
         <el-main style="display: flex; justify-content: center; align-items: center;">
-            <el-card style="width: 400px; margin: 0 auto; padding: 20px; text-align: center;">
+            <el-card style="width: 465px; margin: 0 auto; padding: 20px; text-align: center;">
                 <h1 class="login-title">用户登录</h1>
                 <el-form ref="loginForm" :model="loginForm" label-width="80px">
                     <el-form-item label="用户名" prop="username">
-                        <el-input v-model="loginForm.username" placeholder="请输入用户名" style="margin-bottom: 20px;"></el-input>
+                        <el-input v-model="loginForm.username" placeholder="请输入用户名" style="width: 300px;margin-bottom: 20px;"></el-input>
                     </el-form-item>
                     <el-form-item label="密码" prop="password">
-                        <el-input type="password" v-model="loginForm.password" placeholder="请输入密码" style="margin-bottom: 20px;"></el-input>
+                        <el-input type="password" v-model="loginForm.password" placeholder="请输入密码" style="width: 300px;margin-bottom: 20px;"></el-input>
                     </el-form-item>
+                    <div id="sc" style="margin: -20px 0 20px 100px;"></div>
+
                     <el-form-item style="text-align: center;">
                         <el-button type="primary" @click="login" style="width: 100%;">登录</el-button>
                     </el-form-item>
@@ -48,6 +51,38 @@
 
 <!-- 创建 Vue 实例 -->
 <script>
+    // 实例化ic对象
+    AWSC.use("ic", function (state, module) {
+        // 初始化
+        window.ic = module.init({
+            // test: module.TEST_PASS, // 测试智能验证通过
+            // test: module.TEST_BLOCK, // 测试智能验证失败
+            // test: module.TEST_NC_PASS, // 唤醒滑动验证并验证通过
+            // test: module.TEST_NC_BLOCK, // 唤醒滑动验证并验证失败
+
+            // 应用类型标识。它和使用场景标识（scene字段）一起决定了智能验证的业务场景与后端对应使用的策略模型。您可以在阿里云验证码控制台的配置管理页签找到对应的appkey字段值，请务必正确填写。
+            appkey: "FFFF0N0000000000B8B6",
+            // 使用场景标识。它和应用类型标识（appkey字段）一起决定了智能验证的业务场景与后端对应使用的策略模型。您可以在阿里云验证码控制台的配置管理页签找到对应的scene值，请务必正确填写。
+            scene: "ic_login",
+            // 声明智能验证需要渲染的目标元素ID。
+            renderTo: 'sc',
+            // 验证通过时会触发该回调参数。您可以在该回调参数中将会话ID（sessionId）、签名串（sig）、请求唯一标识（token）字段记录下来，随业务请求一同发送至您的服务端调用验签。
+            success: function (data) {
+                window.console && console.log(data.sessionId)
+                window.console && console.log(data.sig)
+                window.console && console.log(data.token)
+            },
+            // 验证失败时触发该回调参数
+            fail: function (failCode) {
+                console.log(failCode)
+            },
+            // 验证码加载异常时触发该回调参数
+            error: function (errorCode) {
+                console.log(errorCode)
+            }
+        });
+    })
+
     new Vue({
         el: '#app',
         data() {

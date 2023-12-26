@@ -8,7 +8,6 @@
     <!-- 引入 Vue.js 和 Element UI 的 CDN 链接 -->
 <!--    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
     <link rel="stylesheet" href="./css/element.css">
-    <script src="https://g.alicdn.com/AWSC/AWSC/awsc.js"></script>
 </head>
 
 <body>
@@ -16,19 +15,29 @@
 <div id="app">
     <el-container style="height: 100vh;">
         <el-main style="display: flex; justify-content: center; align-items: center;">
-            <el-card style="width: 465px; margin: 0 auto; padding: 20px; text-align: center;">
+            <el-card style="width: 565px; margin: 0 auto; padding: 20px; text-align: center;">
                 <h1 class="login-title">用户登录</h1>
                 <el-form ref="loginForm" :model="loginForm" label-width="80px">
                     <el-form-item label="用户名" prop="username">
-                        <el-input v-model="loginForm.username" placeholder="请输入用户名" style="width: 300px;margin-bottom: 20px;"></el-input>
+                        <el-input v-model="loginForm.username" placeholder="请输入用户名" style="width: 400px;"></el-input>
                     </el-form-item>
                     <el-form-item label="密码" prop="password">
-                        <el-input type="password" v-model="loginForm.password" placeholder="请输入密码" style="width: 300px;margin-bottom: 20px;"></el-input>
+                        <el-input type="password" v-model="loginForm.password" placeholder="请输入密码" style="width: 400px;"></el-input>
                     </el-form-item>
-                    <div id="sc" style="margin: -20px 0 20px 100px;"></div>
-
+                    <el-form-item label="QQ邮箱" prop="email">
+                        <el-input v-model="loginForm.email" placeholder="请输入QQ邮箱" style="width: 400px;">
+                            <template slot="append">
+                                <el-button type="primary" :disabled="isSendingCode" :style="{backgroundColor: isSendingCode ? '#ccc' : '#409EFF', color: '#fff'}" @click="sendVerificationCode">
+                                    {{ isSendingCode ? countDown + '秒后可再次调用' : '发送验证码' }}
+                                </el-button>
+                            </template>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item label="验证码" prop="code">
+                        <el-input v-model="loginForm.code" placeholder="请输入验证码" style="width: 400px;"></el-input>
+                    </el-form-item>
                     <el-form-item style="text-align: center;">
-                        <el-button type="primary" @click="login" style="width: 100%;">登录</el-button>
+                        <el-button type="primary" @click="login" style="width: 400px;">登录</el-button>
                     </el-form-item>
                 </el-form>
             </el-card>
@@ -51,52 +60,73 @@
 
 <!-- 创建 Vue 实例 -->
 <script>
-    // 实例化ic对象
-    AWSC.use("ic", function (state, module) {
-        // 初始化
-        window.ic = module.init({
-            // test: module.TEST_PASS, // 测试智能验证通过
-            // test: module.TEST_BLOCK, // 测试智能验证失败
-            // test: module.TEST_NC_PASS, // 唤醒滑动验证并验证通过
-            // test: module.TEST_NC_BLOCK, // 唤醒滑动验证并验证失败
-
-            // 应用类型标识。它和使用场景标识（scene字段）一起决定了智能验证的业务场景与后端对应使用的策略模型。您可以在阿里云验证码控制台的配置管理页签找到对应的appkey字段值，请务必正确填写。
-            appkey: "FFFF0N0000000000B8B6",
-            // 使用场景标识。它和应用类型标识（appkey字段）一起决定了智能验证的业务场景与后端对应使用的策略模型。您可以在阿里云验证码控制台的配置管理页签找到对应的scene值，请务必正确填写。
-            scene: "ic_login",
-            // 声明智能验证需要渲染的目标元素ID。
-            renderTo: 'sc',
-            // 验证通过时会触发该回调参数。您可以在该回调参数中将会话ID（sessionId）、签名串（sig）、请求唯一标识（token）字段记录下来，随业务请求一同发送至您的服务端调用验签。
-            success: function (data) {
-                window.console && console.log(data.sessionId)
-                window.console && console.log(data.sig)
-                window.console && console.log(data.token)
-            },
-            // 验证失败时触发该回调参数
-            fail: function (failCode) {
-                console.log(failCode)
-            },
-            // 验证码加载异常时触发该回调参数
-            error: function (errorCode) {
-                console.log(errorCode)
-            }
-        });
-    })
-
     new Vue({
         el: '#app',
         data() {
             return {
                 loginForm: {
+                    email: '',
                     username: '',
                     password: '',
-                }
+                    code: '',
+                },
+                user: {
+                    username: '',
+                    password: ''
+                },
+                verificationCode: '', // 保存验证码
+                isSendingCode: false, // 是否正在发送验证码
+                countDown: 30, // 倒计时剩余时间
             };
         },
         methods: {
+            sendVerificationCode() {
+                if (this.isSendingCode) return; // 如果正在发送验证码，则不执行下面的逻辑
+                this.isSendingCode = true; // 设置为正在发送验证码状态
+                // 向后端发送请求来获取验证码
+                axios.post('/api/sendMsg', { mail: this.loginForm.email })
+                    .then(response => {
+                        // 请求成功的处理逻辑
+                        const result = response.data;
+                        if (result.code === 0) {
+                            this.$message.success(result.message)
+                            // 将接收到的验证码保存到 verificationCode 属性中
+                            this.verificationCode = result.data
+                            console.log("ve", this.verificationCode)
+                            // 启动计时器
+                            this.startCountDown();
+                        } else {
+                            this.$message.error(result.message)
+                        }
+                    })
+                    .catch(error => {
+                        // 请求失败的处理逻辑
+                        // console.error('发送验证码失败', error.response.data.message);
+                        this.$message.error('发送验证码失败,可能原因是您的邮箱地址格式不正确!!!')
+                        console.error('发送验证码失败', error.response.data.message);
+                        this.isSendingCode = false; // 发送失败后将状态设回false
+                    });
+            },
+            startCountDown() {
+                let timer = setInterval(() => {
+                    console.log("调用")
+                    this.countDown--;
+                    if (this.countDown === 0) {
+                        clearInterval(timer);
+                        this.isSendingCode = false; // 计时结束后将状态设回false，允许再次发送验证码
+                    }
+                }, 1000);
+            },
             login() {
+                // 验证码校验
+                if (this.loginForm.code !== this.verificationCode) {
+                    this.$message.error('验证码错误');
+                    return;
+                }
+                this.user.username = this.loginForm.username;
+                this.user.password = this.loginForm.password;
                 // 发送 POST 请求到后端
-                axios.post('/api/login', this.loginForm)
+                axios.post('/api/login', this.user)
                     .then(response => {
                         // 登录成功的处理逻辑
                         const result = response.data;

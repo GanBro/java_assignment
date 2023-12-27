@@ -23,6 +23,11 @@
                 <i class="el-icon-user" style="font-size: 40px;"></i>
                 <div style="font-size: 16px;">个人中心</div>
             </el-button>
+            <el-button type="text" @click="logout">
+                <!--                <i class="el-icon-s-operation" style="font-size: 40px;"></i>-->
+                <img src="./imgs/logout.webp" alt="Description of your image" style="width: 40px; height: 40px;">
+                <div style="font-size: 16px;">退出登录</div>
+            </el-button>
         </el-header>
         <el-main>
             <el-row :gutter="20">
@@ -301,6 +306,9 @@
                         console.error('更新逾期数量出错了：', error);
                     });
             },
+            logout() {
+                window.location.href = 'index.html'; // 请替换为你的登录页面路径
+            }
         },
         mounted() {
             axios.defaults.baseURL = 'http://localhost:8080'; // 设置URL前缀

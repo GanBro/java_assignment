@@ -41,8 +41,13 @@
                 </el-col>
             </el-row>
             <el-table :data="pagedBookList" style="width: 100%; margin-top: 20px;">
-                <el-table-column prop="bookInfoId" label="书本ID"></el-table-column>
-                <el-table-column prop="bookName" label="书本名称"></el-table-column>
+                <!--从1开始展示，不是数据库的id-->
+                <el-table-column prop="bookInfoId" label="书本序号" type="index" width="100px">
+                    <template slot-scope="{ $index, row }">
+                        {{ $index + 1 + (currentPage - 1) * pageSize }}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="bookName" label="书本名称"></el-table-column >
                 <el-table-column prop="publisher" label="出版社"></el-table-column>
                 <el-table-column prop="publishDate" label="出版时间"></el-table-column>
                 <el-table-column prop="totalInventory" label="图书库存"></el-table-column>

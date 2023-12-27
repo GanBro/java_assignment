@@ -83,7 +83,53 @@
             axios.defaults.baseURL = 'http://localhost:8080'; // 设置URL前缀
         },
         methods: {
+            validateLoginForm() {
+                const { email, username, password } = this.loginForm;
+                if (!email || !username || !password) {
+                    this.$message({
+                        message: '所有字段都是必填项',
+                        type: 'error'
+                    });
+                    return false;
+                }
+
+                if (username.length < 3 || username.length > 20) {
+                    this.$message({
+                        message: '用户名长度需在3到20个字符之间',
+                        type: 'error'
+                    });
+                    return false;
+                }
+
+                if (password.length < 6 || password.length > 20) {
+                    this.$message({
+                        message: '密码长度需在6到20个字符之间',
+                        type: 'error'
+                    });
+                    return false;
+                }
+
+                if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                    this.$message({
+                        message: '用户名只能由字母、数字和下划线组成',
+                        type: 'error'
+                    });
+                    return false;
+                }
+
+                if (!/^\d{5,10}@qq\.com$/.test(email)) {
+                    this.$message({
+                        message: '请输入正确的QQ邮箱',
+                        type: 'error'
+                    });
+                    return false;
+                }
+                return true;
+            },
             sendVerificationCode() {
+                if (!this.validateLoginForm()) {
+                    return
+                }
                 if (this.isSendingCode) return; // 如果正在发送验证码，则不执行下面的逻辑
                 this.isSendingCode = true; // 设置为正在发送验证码状态
                 // 启动计时器
@@ -124,6 +170,9 @@
                 }, 1000);
             },
             login() {
+                if (!this.validateLoginForm()) {
+                    return
+                }
                 // 验证码校验
                 if (this.loginForm.code !== this.verificationCode) {
                     this.$message.error('验证码错误');

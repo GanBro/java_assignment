@@ -119,7 +119,10 @@
             class="custom-drawer"
     >
         <el-table :data="paginatedDetailData">
-            <el-table-column label="书本ID" prop="bookId">
+            <el-table-column prop="bookInfoId" label="书本序号" type="index" width="100px">
+                <template slot-scope="{ $index, row }">
+                    {{ $index + 1 + (currentPage - 1) * pageSize }}
+                </template>
             </el-table-column>
             <el-table-column label="书本名称" prop="bookName"></el-table-column>
             <el-table-column label="出版社" prop="publisher"></el-table-column>

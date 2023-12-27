@@ -14,7 +14,7 @@
 <div id="app">
     <el-container style="height: 100vh;">
         <el-main style="display: flex;  justify-content: center; align-items: center">
-            <el-card style="width: 400px; margin: 0 auto; padding: 20px; text-align: center;">
+            <el-card style="width: 565px; margin: 0 auto; padding: 10px; text-align: center;">
                 <el-form ref="loginForm" :model="loginForm" label-width="80px">
                     <h1 class="display-4">图书馆管理管理后台</h1>
                     <el-form-item label="用户名" prop="username">
@@ -22,6 +22,19 @@
                     </el-form-item>
                     <el-form-item label="密码" prop="password">
                         <el-input type="password" v-model="loginForm.password" placeholder="请输入密码"></el-input>
+                    </el-form-item>
+                    </el-form-item>
+                    <el-form-item label="QQ邮箱" prop="email">
+                        <el-input v-model="loginForm.email" placeholder="请输入QQ邮箱" style="width: 450px;">
+                            <template slot="append">
+                                <el-button type="primary" :disabled="isSendingCode" :style="{backgroundColor: isSendingCode ? '#ccc' : '#409EFF', color: '#fff'}" @click="sendVerificationCode">
+                                    {{ isSendingCode ? countDown + '秒后可再次发送' : '发送验证码' }}
+                                </el-button>
+                            </template>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item label="验证码" prop="code">
+                        <el-input v-model="loginForm.code" placeholder="请输入验证码" style="width: 450px;"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="login" style="width: 100%">登录</el-button>
@@ -52,16 +65,73 @@
         data() {
             return {
                 loginForm: {
+                    email: '',
+                    username: '',
+                    password: '',
+                    code: '',
+                },
+                user: {
                     username: '',
                     password: ''
-                }
+                },
+                verificationCode: '', // 保存验证码
+                isSendingCode: false, // 是否正在发送验证码
+                countDown: 10, // 倒计时剩余时间
             };
         },
         mounted() {
             axios.defaults.baseURL = 'http://localhost:8080'; // 设置URL前缀
         },
         methods: {
+            sendVerificationCode() {
+                if (this.isSendingCode) return; // 如果正在发送验证码，则不执行下面的逻辑
+                this.isSendingCode = true; // 设置为正在发送验证码状态
+                // 启动计时器
+                this.startCountDown();
+                // 向后端发送请求来获取验证码
+                axios.post('/api/sendMsg', { mail: this.loginForm.email })
+                    .then(response => {
+                        // 请求成功的处理逻辑
+                        const result = response.data;
+                        if (result.code === 0) {
+                            this.$message.success(result.message)
+                            // 将接收到的验证码保存到 verificationCode 属性中
+                            this.verificationCode = result.data
+                        } else {
+                            this.$message.error(result.message)
+                        }
+                    })
+                    .catch(error => {
+                        // 请求失败的处理逻辑
+                        // console.error('发送验证码失败', error.response.data.message);
+                        this.$message.error('发送验证码失败,可能原因是您的邮箱地址格式不正确!!!')
+                        console.error('发送验证码失败', error.response.data.message);
+                        this.isSendingCode = false; // 发送失败后将状态设回false
+                    });
+            },
+            startCountDown() {
+                this.countDown = 10; // 重置倒计时为10秒
+                this.isSendingCode = true; // 设置为正在发送验证码状态
+
+                let timer = setInterval(() => {
+                    console.log("调用")
+                    if (this.countDown > 0) {
+                        this.countDown--;
+                    } else {
+                        clearInterval(timer);
+                        this.isSendingCode = false; // 计时结束后将状态设回false，允许再次发送验证码
+                    }
+                }, 1000);
+            },
             login() {
+                // 验证码校验
+                if (this.loginForm.code !== this.verificationCode) {
+                    this.$message.error('验证码错误');
+                    return;
+                }
+                this.user.username = this.loginForm.username;
+                this.user.password = this.loginForm.password;
+
                 axios.post('/api/adminlogin', this.loginForm)
                     .then(response => {
                         // 登录成功的处理逻辑

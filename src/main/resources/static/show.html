@@ -58,7 +58,7 @@
             <!--@current-change="handleCurrentChange"  点击分页数字时调用的方法-->
             <el-pagination
                     @current-change="handleCurrentChange"
-                    :current-page="currentPage"
+                    :current-page.sync="currentPage"
                     :page-size="pageSize"
                     :total="totalItems"
                     layout="total, prev, pager, next"
@@ -115,7 +115,7 @@
         <el-table :data="paginatedDetailData">
             <el-table-column prop="bookInfoId" label="书本序号" type="index" width="100px">
                 <template slot-scope="{ $index, row }">
-                    {{ $index + 1 + (currentPage - 1) * pageSize }}
+                    {{ $index + 1 + (currentPageDetail - 1) * pageSize }}
                 </template>
             </el-table-column>
             <el-table-column label="书本名称" prop="bookName"></el-table-column>
@@ -238,7 +238,7 @@
             },
             /*图书详情分页处理*/
             detailHandleCurrentChange(page) {
-                this.currentPage = page;
+                // this.currentPage = page;
             },
             handleClose(done) {
                 // 可以在这里添加确认关闭的逻辑...

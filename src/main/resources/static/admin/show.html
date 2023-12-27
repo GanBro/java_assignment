@@ -119,9 +119,9 @@
             class="custom-drawer"
     >
         <el-table :data="paginatedDetailData">
-            <el-table-column prop="bookInfoId" label="书本序号" type="index" width="100px">
+            <el-table-column prop="bookId" label="书本序号" type="index" width="100px">
                 <template slot-scope="{ $index, row }">
-                    {{ $index + 1 + (currentPage - 1) * pageSize }}
+                    {{ $index + 1 + (currentPageDetail - 1) * pageSize }}
                 </template>
             </el-table-column>
             <el-table-column label="书本名称" prop="bookName"></el-table-column>
@@ -159,7 +159,6 @@
         </el-table>
         <!--图书详情分页-->
         <el-pagination
-                @current-change="detailHandleCurrentChange"
                 :current-page.sync="currentPageDetail"
                 :page-size="pageSizeDetail"
                 :page-sizes="[10, 20, 30, 40]"
@@ -246,10 +245,6 @@
                         console.error('显示图书详情时出错：', error);
                     });
 
-            },
-            /*图书详情分页处理*/
-            detailHandleCurrentChange(page) {
-                this.currentPage = page;
             },
             deleteBook(bookInfo) {
                 this.$confirm('确定要删除该图书吗？', '提示', {

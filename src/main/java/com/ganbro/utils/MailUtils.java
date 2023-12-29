@@ -50,7 +50,7 @@ public class MailUtils {
         message.setSubject("吴波的图书馆管理系统");
         // 设置邮件的内容体
         message.setContent("尊敬的用户:你好!\n注册验证码为:" + code + "(有效期为一分钟,请勿告知他人)", "text/html;charset=UTF-8");
-        // 最后当然就是发送邮件啦
+        // 发送邮件
         Transport.send(message);
     }
 

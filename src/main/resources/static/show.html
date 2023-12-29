@@ -26,66 +26,68 @@
 <body>
 
 <div id="app">
-    <el-container>
-        <!--个人中心-->
-        <el-header style="display: flex; justify-content: flex-end;">
-            <!-- 模板中的 el-dropdown 部分 -->
-            <el-dropdown @command="handleCommand">
+    <el-container style="display: flex; justify-content: center; align-items: center;">
+        <el-card style="width: 80%;">
+            <!--个人中心-->
+            <el-header style="display: flex; justify-content: flex-end;">
+                <!-- 模板中的 el-dropdown 部分 -->
+                <el-dropdown @command="handleCommand">
                 <span class="el-dropdown-link">
                   <i class="el-icon-setting" style="font-size: 40px;"></i>
                   <div style="font-size: 16px;">设置</div>
                 </span>
-                <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command="goToUserInfo">个人中心</el-dropdown-item>
-                    <el-dropdown-item command="logout">退出登录</el-dropdown-item>
-                </el-dropdown-menu>
-            </el-dropdown>
-        </el-header>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item command="goToUserInfo">个人中心</el-dropdown-item>
+                        <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </el-header>
 
 
-        <el-main>
-            <el-row :gutter="20">
-                <el-col :span="8">
-                    <el-input
-                            v-model="searchKeyword"
-                            placeholder="请输入关键字"
-                            prefix-icon="el-icon-search">
-                    </el-input>
-                </el-col>
-                <el-col :span="2">
-                    <el-button @click="searchBooks(currentPage, pageSize)" type="primary" icon="el-icon-search">搜索
-                    </el-button>
-                </el-col>
-            </el-row>
-            <el-table :data="pagedBookList" style="width: 100%; margin-top: 20px;">
-                <el-table-column prop="bookInfoId" label="书本序号" type="index" width="100px">
-                    <template slot-scope="{ $index, row }">
-                        {{ $index + 1 + (currentPage - 1) * pageSize }}
-                    </template>
-                </el-table-column>
-                <el-table-column prop="bookName" label="书本名称"></el-table-column>
-                <el-table-column prop="publisher" label="出版社"></el-table-column>
-                <el-table-column prop="publishDate" label="出版时间"></el-table-column>
-                <el-table-column prop="totalInventory" label="图书库存"></el-table-column>
-                <el-table-column prop="availableBooks" label="可借阅数量"></el-table-column>
-                <el-table-column label="操作">
-                    <template slot-scope="scope">
-                        <!--scope.row是当前行数据-->
-                        <el-button @click="showBookDetails(scope.row)" type="text" icon="el-icon-view"></el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <!--@current-change="handleCurrentChange"  点击分页数字时调用的方法-->
-            <el-pagination
-                    @current-change="handleCurrentChange"
-                    :current-page.sync="currentPage"
-                    :page-size="pageSize"
-                    :total="totalItems"
-                    layout="total, prev, pager, next"
-                    style="margin-top: 20px;"
-            ></el-pagination>
+            <el-main>
+                <el-row :gutter="20">
+                    <el-col :span="8">
+                        <el-input
+                                v-model="searchKeyword"
+                                placeholder="请输入关键字"
+                                prefix-icon="el-icon-search">
+                        </el-input>
+                    </el-col>
+                    <el-col :span="2">
+                        <el-button @click="searchBooks(currentPage, pageSize)" type="primary" icon="el-icon-search">搜索
+                        </el-button>
+                    </el-col>
+                </el-row>
+                <el-table :data="pagedBookList" style="width: 100%; margin-top: 20px;">
+                    <el-table-column prop="bookInfoId" label="书本序号" type="index" width="100px">
+                        <template slot-scope="{ $index, row }">
+                            {{ $index + 1 + (currentPage - 1) * pageSize }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="bookName" label="书本名称"></el-table-column>
+                    <el-table-column prop="publisher" label="出版社"></el-table-column>
+                    <el-table-column prop="publishDate" label="出版时间"></el-table-column>
+                    <el-table-column prop="totalInventory" label="图书库存"></el-table-column>
+                    <el-table-column prop="availableBooks" label="可借阅数量"></el-table-column>
+                    <el-table-column label="操作">
+                        <template slot-scope="scope">
+                            <!--scope.row是当前行数据-->
+                            <el-button @click="showBookDetails(scope.row)" type="text" icon="el-icon-view"></el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <!--@current-change="handleCurrentChange"  点击分页数字时调用的方法-->
+                <el-pagination
+                        @current-change="handleCurrentChange"
+                        :current-page.sync="currentPage"
+                        :page-size="pageSize"
+                        :total="totalItems"
+                        layout="total, prev, pager, next"
+                        style="margin-top: 20px;"
+                ></el-pagination>
 
-        </el-main>
+            </el-main>
+        </el-card>
     </el-container>
 
 

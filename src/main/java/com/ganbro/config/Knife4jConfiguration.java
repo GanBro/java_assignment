@@ -19,8 +19,8 @@ public class Knife4jConfiguration {
         Docket docket=new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(new ApiInfoBuilder()
                         //描述字段支持Markdown语法
-                        .description("# Knife4j RESTful APIs")
-                        .termsOfServiceUrl("https://doc.xiaominfo.com/")
+                        .description("# 吴波的图书馆管理系统接口文档")
+                        .termsOfServiceUrl("https://ganbro.github.io/")
                         .contact("2551921037@qq.com")
                         .version("1.0")
                         .build())

@@ -11,85 +11,96 @@
         .custom-drawer {
             height: 1500px;
         }
+        .el-dropdown-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .el-dropdown-link i {
+            margin-bottom: 5px; /* 调整图标下方距离 */
+        }
     </style>
 </head>
 <body>
 
 <div id="app">
-    <el-container>
-        <!--用户管理界面-->
-        <el-header style="display: flex; justify-content: flex-end;">
-            <!-- 模板中的 el-dropdown 部分 -->
-            <el-dropdown @command="handleCommand">
+    <el-container style="display: flex; justify-content: center; align-items: center;">
+        <el-card style="width: 80%">
+            <!--用户管理界面-->
+            <el-header style="display: flex; justify-content: flex-end;">
+                <!-- 模板中的 el-dropdown 部分 -->
+                <el-dropdown @command="handleCommand">
                 <span class="el-dropdown-link">
                   <i class="el-icon-setting" style="font-size: 40px;"></i>
                   <div style="font-size: 16px;">设置</div>
                 </span>
-                <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command="goToUserManagement">用户管理</el-dropdown-item>
-                    <el-dropdown-item command="logout">退出登录</el-dropdown-item>
-                </el-dropdown-menu>
-            </el-dropdown>
-        </el-header>
-<!--        <el-header style="display: flex; justify-content: flex-end;">-->
-<!--            <el-button type="text" @click="goToUserManagement">-->
-<!--                <i class="el-icon-user" style="font-size: 40px;"></i>-->
-<!--                <div style="font-size: 16px;">用户管理</div>-->
-<!--            </el-button>-->
-<!--            <el-button type="text" @click="logout">-->
-<!--&lt;!&ndash;                <i class="el-icon-s-operation" style="font-size: 40px;"></i>&ndash;&gt;-->
-<!--                <img src="../imgs/logout.webp" alt="Description of your image" style="width: 40px; height: 40px;">-->
-<!--                <div style="font-size: 16px;">退出登录</div>-->
-<!--            </el-button>-->
-<!--        </el-header>-->
-        <el-main>
-            <el-row :gutter="20">
-                <el-col :span="8">
-                    <el-input
-                            v-model="searchKeyword"
-                            placeholder="请输入关键字"
-                            prefix-icon="el-icon-search">
-                    </el-input>
-                </el-col>
-                <el-col :span="2">
-                    <el-button @click="searchBooks(currentPage, pageSize)" type="primary" icon="el-icon-search">搜索</el-button>
-                </el-col>
-                <el-col :span="6">
-                    <el-button @click="addBook" type="success" icon="el-icon-plus">新增</el-button>
-                </el-col>
-            </el-row>
-            <el-table :data="pagedBookList" style="width: 100%; margin-top: 20px;">
-                <!--从1开始展示，不是数据库的id-->
-                <el-table-column prop="bookInfoId" label="书本序号" type="index" width="100px">
-                    <template slot-scope="{ $index, row }">
-                        {{ $index + 1 + (currentPage - 1) * pageSize }}
-                    </template>
-                </el-table-column>
-                <el-table-column prop="bookName" label="书本名称"></el-table-column >
-                <el-table-column prop="publisher" label="出版社"></el-table-column>
-                <el-table-column prop="publishDate" label="出版时间"></el-table-column>
-                <el-table-column prop="totalInventory" label="图书库存"></el-table-column>
-                <el-table-column prop="availableBooks" label="可借阅数量"></el-table-column>
-                <el-table-column label="操作">
-                    <template slot-scope="scope">
-                        <!--scope.row是当前行数据-->
-                        <el-button @click="showBookDetails(scope.row)" type="text" icon="el-icon-view"></el-button>
-                        <el-button @click="deleteBook(scope.row)" type="text" icon="el-icon-delete" class="text-danger"></el-button>
-<!--                        <el-button @click="editBook(scope.row)" type="text" icon="el-icon-edit" class="text-warning"></el-button>-->
-                    </template>
-                </el-table-column>
-            </el-table>
-            <!--@current-change="handleCurrentChange"  点击分页数字时调用的方法-->
-            <el-pagination
-                    @current-change="handleCurrentChange"
-                    :current-page="currentPage"
-                    :page-size="pageSize"
-                    :total="totalItems"
-                    layout="total, prev, pager, next"
-                    style="margin-top: 20px;"
-            ></el-pagination>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item command="goToUserManagement">用户管理</el-dropdown-item>
+                        <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </el-header>
+            <!--        <el-header style="display: flex; justify-content: flex-end;">-->
+            <!--            <el-button type="text" @click="goToUserManagement">-->
+            <!--                <i class="el-icon-user" style="font-size: 40px;"></i>-->
+            <!--                <div style="font-size: 16px;">用户管理</div>-->
+            <!--            </el-button>-->
+            <!--            <el-button type="text" @click="logout">-->
+            <!--&lt;!&ndash;                <i class="el-icon-s-operation" style="font-size: 40px;"></i>&ndash;&gt;-->
+            <!--                <img src="../imgs/logout.webp" alt="Description of your image" style="width: 40px; height: 40px;">-->
+            <!--                <div style="font-size: 16px;">退出登录</div>-->
+            <!--            </el-button>-->
+            <!--        </el-header>-->
+            <el-main>
+                <el-row :gutter="20">
+                    <el-col :span="8">
+                        <el-input
+                                v-model="searchKeyword"
+                                placeholder="请输入关键字"
+                                prefix-icon="el-icon-search">
+                        </el-input>
+                    </el-col>
+                    <el-col :span="2">
+                        <el-button @click="searchBooks(currentPage, pageSize)" type="primary" icon="el-icon-search">搜索</el-button>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-button @click="addBook" type="success" icon="el-icon-plus">新增</el-button>
+                    </el-col>
+                </el-row>
+                <el-table :data="pagedBookList" style="width: 100%; margin-top: 20px;">
+                    <!--从1开始展示，不是数据库的id-->
+                    <el-table-column prop="bookInfoId" label="书本序号" type="index" width="100px">
+                        <template slot-scope="{ $index, row }">
+                            {{ $index + 1 + (currentPage - 1) * pageSize }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="bookName" label="书本名称"></el-table-column >
+                    <el-table-column prop="publisher" label="出版社"></el-table-column>
+                    <el-table-column prop="publishDate" label="出版时间"></el-table-column>
+                    <el-table-column prop="totalInventory" label="图书库存"></el-table-column>
+                    <el-table-column prop="availableBooks" label="可借阅数量"></el-table-column>
+                    <el-table-column label="操作">
+                        <template slot-scope="scope">
+                            <!--scope.row是当前行数据-->
+                            <el-button @click="showBookDetails(scope.row)" type="text" icon="el-icon-view"></el-button>
+                            <el-button @click="deleteBook(scope.row)" type="text" icon="el-icon-delete" class="text-danger"></el-button>
+                            <!--                        <el-button @click="editBook(scope.row)" type="text" icon="el-icon-edit" class="text-warning"></el-button>-->
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <!--@current-change="handleCurrentChange"  点击分页数字时调用的方法-->
+                <el-pagination
+                        @current-change="handleCurrentChange"
+                        :current-page="currentPage"
+                        :page-size="pageSize"
+                        :total="totalItems"
+                        layout="total, prev, pager, next"
+                        style="margin-top: 20px;"
+                ></el-pagination>
 
-        </el-main>
+            </el-main>
+        </el-card>
     </el-container>
 
 

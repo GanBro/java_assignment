@@ -89,7 +89,6 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <!--@current-change="handleCurrentChange"  点击分页数字时调用的方法-->
                 <el-pagination
                         @current-change="handleCurrentChange"
                         :current-page="currentPage"
@@ -147,7 +146,7 @@
             :before-close="handleClose"
             class="custom-drawer"
     >
-        <el-table :data="paginatedDetailData">
+        <el-table :data="detailFormData">
             <el-table-column prop="bookId" label="书本序号" type="index" width="100px">
                 <template slot-scope="{ $index, row }">
                     {{ $index + 1 + (currentPageDetail - 1) * pageSize }}
@@ -186,13 +185,15 @@
                 </template>
             </el-table-column>
         </el-table>
-        <!--图书详情分页-->
         <el-pagination
+                @size-change="handleDetailSizeChange"
+                @current-change="detailHandleCurrentChange"
                 :current-page.sync="currentPageDetail"
                 :page-size="pageSizeDetail"
-                :page-sizes="[10, 20, 30, 40]"
-                layout="total, prev, pager, next"
-                :total="Object.values(detailFormData).length"
+                :page-sizes="[5, 7, 10, 20]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="detailsTotal"
+                style="margin-top: 20px;"
         ></el-pagination>
     </el-drawer>
 
@@ -229,9 +230,19 @@
                 detailDrawer: false,  // 图书详情抽屉
                 detailFormData: {},    // 用于显示图书详情的表单数据
                 showDetail: true,    // 用于控制是否显示图书详情
+                detailsTotal: 0,       // 图书详情的总数
+                bookDetailTmp: null,   // 临时变量
             };
         },
         methods: {
+            handleDetailSizeChange(pageSize) {
+              this.pageSizeDetail = pageSize
+              this.showBookDetails(this.bookDetailTmp)
+            },
+            detailHandleCurrentChange(pageNum) {
+                this.currentPageDetail = pageNum
+                this.showBookDetails(this.bookDetailTmp)
+            },
             handleCommand(command) {
                 if (command === 'goToUserManagement') {
                     this.goToUserManagement();
@@ -245,12 +256,7 @@
                     .then(response => {
                         const result = response.data;
                         if (result.code === 0) {
-                            // 框架自动写了，不用自己算索引
-                            // const startIndex = (currentPage - 1) * pageSize; // 计算起始索引
-                            // const endIndex = Math.min(startIndex + pageSize, result.data.totalItems); // 计算结束索引，并确保不超过数据列表长度
-                            // this.pagedBookList = result.data.list.slice(startIndex, endIndex); // 获取指定范围的数据
                             this.pagedBookList = result.data.list
-                            // console.log(JSON.stringify(this.pagedBookList));
                             this.totalItems = result.data.totalItems; // 获取 totalItems 字段的值
                             this.pageSize = result.data.pageSize; // 每页大小
                         } else {
@@ -264,15 +270,17 @@
 
             showBookDetails(bookDetail) {
                 // 跳转到书本详细信息页面...
+                this.bookDetailTmp = bookDetail;
                 this.detailDrawer = true
                 // detailDrawer回显
-                axios.get(`/api/books/${bookDetail.bookInfoId}/details`)
+                axios.get(`/api/books/${bookDetail.bookInfoId}/details`,
+                    {params: {currentPageDetail: this.currentPageDetail, pageSizeDetail: this.pageSizeDetail}})
                     .then(response => {
                         const result = response.data;
                         if (result.code === 0 && result.data) {
                             // 如果数据存在，再进行赋值操作
-                            this.detailFormData = result.data
-                            console.log(this.detailFormData)
+                            this.detailsTotal = result.data.totalItems;
+                            this.detailFormData = result.data.list;
                         } else {
                             this.$message.error('显示图书详情失败：' + result.message);
                         }
@@ -432,20 +440,6 @@
             this.searchBooks(this.currentPage, this.pageSize);
         },
         computed: {
-            paginatedDetailData() {
-                // 每页显示的数量
-                const pageSize = this.pageSizeDetail;
-                // 计算起始索引
-                const startIndex = (this.currentPageDetail - 1) * pageSize;
-                // 计算结束索引
-                const endIndex = startIndex + pageSize;
-
-                // 将对象的值转换为数组
-                const dataArray = Object.values(this.detailFormData);
-
-                // 返回当前页的数据
-                return dataArray.slice(startIndex, endIndex);
-            },
             showTotalInventory() {
                 return this.showDetail === true
             }

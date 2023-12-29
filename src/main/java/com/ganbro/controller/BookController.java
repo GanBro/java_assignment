@@ -74,16 +74,9 @@ public class BookController {
     @DeleteMapping("/{bookId}")
     @ApiOperation(value = "删除图书信息")
     public Result<Void> deleteBook(@PathVariable("bookId") Integer bookInfoId) {
-        String name = bookService.selectNameById(bookInfoId);
-        List<BookDetail> bookDetails = bookService.selectBookDetailByBookInfo(bookInfoId);
-        for (BookDetail bookDetail : bookDetails) {
-            if (bookDetail.getIsBorrowed()) {
-                return Result.error(null, "存在图书已被借出，无法删除!");
-            }
-        }
-        bookService.deleteBookDetailsByBookId(bookInfoId);
-        bookService.deleteById(bookInfoId);
-        return Result.success(null, "删除图书成功!");
+        ReturnModel returnModel =  bookService.deleteBook(bookInfoId);
+        if (returnModel.getFlag()) return Result.success(null, returnModel.getMessage());
+        else return Result.error(null, returnModel.getMessage());
     }
 
     @DeleteMapping("/detail/{bookId}")
@@ -99,9 +92,11 @@ public class BookController {
 
     @GetMapping("/{bookInfoId}/details")
     @ApiOperation(value = "获取图书详细信息")
-    public Result<List<BookDetail>> getBookDetails(@PathVariable Integer bookInfoId) {
+    public Result<PageData<BookDetail>> getBookDetails(@PathVariable Integer bookInfoId,
+                                                   @PathParam("currentPageDetail") Integer currentPageDetail,
+                                                   @PathParam("pageSizeDetail") Integer pageSizeDetail) {
         // 调用 BookService 中的方法获取图书详细信息
-        List<BookDetail> bookDetails = bookService.selectBookDetailByBookInfo(bookInfoId);
+        PageData<BookDetail> bookDetails = bookService.selectBookDetailByBookInfo(bookInfoId, currentPageDetail, pageSizeDetail);
         return Result.success(bookDetails);
     }
 

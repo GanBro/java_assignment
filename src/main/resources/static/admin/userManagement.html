@@ -19,54 +19,58 @@
 <body>
 
 <div id="app">
-    <el-container>
-        <el-main>
-            <el-row :gutter="20">
-                <el-col :span="8">
-                    <el-input
-                            v-model="searchKeyword"
-                            placeholder="请输入关键字"
-                            prefix-icon="el-icon-search">
-                    </el-input>
-                </el-col>
-                <el-col :span="2">
-                    <el-button @click="searchUsers(currentPage, pageSize)" type="primary" icon="el-icon-search">搜索</el-button>
-                </el-col>
-                <el-col :span="6">
-                    <el-button @click="addUser" type="success" icon="el-icon-plus">新增</el-button>
-                </el-col>
-            </el-row>
-            <el-table :data="pagedUserList" style="width: 100%; margin-top: 20px;">
-                <el-table-column prop="userId" label="用户ID"></el-table-column>
-                <el-table-column prop="username" label="用户名"></el-table-column>
-                <el-table-column prop="maxBooksAllowed" label="用户可借阅的书本数量"></el-table-column>
-                <el-table-column prop="borrowedBooks" label="已经借阅的书本数量"></el-table-column>
-<!--                <el-table-column prop="isVip" label="是否为VIP"></el-table-column>-->
-                <el-table-column prop="isVip" label="是否为VIP">
-                    <template slot-scope="{ row }">
-                        <el-switch v-model="row.isVip" :disabled="true"></el-switch>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="overdueBooks" label="逾期未归还的图书数量"></el-table-column>
-                <el-table-column label="操作">
-                    <template slot-scope="scope">
-                        <!--scope.row是当前行数据-->
-                        <el-button @click="deleteUser(scope.row)" type="text" icon="el-icon-delete" class="text-danger"></el-button>
-                        <el-button @click="editUser(scope.row)" type="text" icon="el-icon-edit" class="text-warning"></el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <!--@current-change="handleCurrentChange"  点击分页数字时调用的方法-->
-            <el-pagination
-                    @current-change="handleCurrentChange"
-                    :current-page="currentPage"
-                    :page-size="pageSize"
-                    :total="totalItems"
-                    layout="total, prev, pager, next"
-                    style="margin-top: 20px;"
-            ></el-pagination>
+    <el-container style="display: flex; justify-content: center; align-items: center;">
+        <el-card style="width: 80%;">
+            <el-main>
+                <el-row :gutter="20">
+                    <el-col :span="8">
+                        <el-input
+                                v-model="searchKeyword"
+                                placeholder="请输入关键字"
+                                prefix-icon="el-icon-search">
+                        </el-input>
+                    </el-col>
+                    <el-col :span="2">
+                        <el-button @click="searchUsers(currentPage, pageSize)" type="primary" icon="el-icon-search">搜索</el-button>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-button @click="addUser" type="success" icon="el-icon-plus">新增</el-button>
+                    </el-col>
+                </el-row>
+                <el-table :data="pagedUserList" style="width: 100%; margin-top: 20px;">
+                    <el-table-column prop="userId" label="用户ID"></el-table-column>
+                    <el-table-column prop="username" label="用户名"></el-table-column>
+                    <el-table-column prop="maxBooksAllowed" label="用户可借阅的书本数量"></el-table-column>
+                    <el-table-column prop="borrowedBooks" label="已经借阅的书本数量"></el-table-column>
+                    <!--                <el-table-column prop="isVip" label="是否为VIP"></el-table-column>-->
+                    <el-table-column prop="isVip" label="是否为VIP">
+                        <template slot-scope="{ row }">
+                            <el-switch v-model="row.isVip" :disabled="true"></el-switch>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="overdueBooks" label="逾期未归还的图书数量"></el-table-column>
+                    <el-table-column label="操作">
+                        <template slot-scope="scope">
+                            <!--scope.row是当前行数据-->
+                            <el-button @click="deleteUser(scope.row)" type="text" icon="el-icon-delete" class="text-danger"></el-button>
+                            <el-button @click="editUser(scope.row)" type="text" icon="el-icon-edit" class="text-warning"></el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <!--@current-change="handleCurrentChange"  点击分页数字时调用的方法-->
+                <el-pagination
+                        @size-change="handleSizeChange"
+                        @current-change="handleCurrentChange"
+                        :current-page="currentPage"
+                        :page-sizes="[5, 7, 10, 20]"
+                        :page-size="pageSize"
+                        :total="totalItems"
+                        layout="total, sizes, prev, pager, next, jumper"
+                        style="margin-top: 20px;"
+                ></el-pagination>
 
-        </el-main>
+            </el-main>
+        </el-card>
     </el-container>
 
     <!-- 新增和编辑用户的抽屉 -->
@@ -75,6 +79,7 @@
             :visible.sync="drawer"
             :direction="direction"
             :before-close="detailHandleClose"
+            :total="totalItems"
             :style="drawerStyle"
     >
         <el-form ref="userForm" :model="formData" label-width="100px">
@@ -141,13 +146,18 @@
             };
         },
         methods: {
+            handleSizeChange(pageSize) {
+                this.pageSize = pageSize;
+                this.searchUsers(this.currentPage, this.pageSize);
+            },
             searchUsers(currentPage, pageSize) {
+
                 axios.get(`/api/users/searchByPage?query=${this.searchKeyword}&pageNum=${currentPage}&pageSize=${pageSize}`)
                     .then(response => {
                         const result = response.data;
                         this.pagedUserList = result.data.list;
                         this.totalItems = result.data.totalItems;
-                        this.pageSize = result.data.pageSize;
+                        // this.pageSize = result.data.pageSize;
                     })
                     .catch(error => {
                         console.log(error);

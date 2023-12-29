@@ -3,6 +3,7 @@ package com.ganbro.mapper;
 import com.ganbro.domain.entity.BookInfo;
 import com.ganbro.domain.entity.User;
 import com.ganbro.domain.entity.UserInfo;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
     @Select("SELECT * FROM user_info where username LIKE CONCAT('%', #{query}, '%')")
-    List<UserInfo> searchUserInfoByQuery(String query);
+    Page<UserInfo> searchUserInfoByQuery(String query);
 
     @Delete("DELETE FROM user_info WHERE user_id = #{userId}")
     void deleteUserInfoById(Integer userId);

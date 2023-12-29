@@ -2,6 +2,7 @@ package com.ganbro.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.ganbro.domain.common.PageData;
+import com.ganbro.domain.common.Result;
 import com.ganbro.domain.common.ReturnModel;
 import com.ganbro.domain.entity.BookDetail;
 import com.ganbro.domain.entity.BookInfo;
@@ -102,9 +103,16 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDetail> selectBookDetailByBookInfo(Integer bookInfoId) {
+    public PageData<BookDetail> selectBookDetailByBookInfo(Integer bookInfoId, Integer currentPageDetail, Integer pageSizeDetail) {
         BookInfo bookInfo = bookMapper.selectBookInfoById(bookInfoId);
-        return bookMapper.selectBookDetailByBookInfo(bookInfo);
+        PageHelper.startPage(currentPageDetail, pageSizeDetail);
+
+        PageData<BookDetail> pageData = new PageData<>();
+        List<BookDetail> bookDetails = bookMapper.selectBookDetailByBookInfo(bookInfo);
+        PageInfo<BookDetail> bookDetailPageInfo = new PageInfo<>(bookDetails);
+        pageData.setList(bookDetailPageInfo.getList());
+        pageData.setTotalItems(bookDetailPageInfo.getTotal());
+        return pageData;
     }
 
     @Override
@@ -124,7 +132,6 @@ public class BookServiceImpl implements BookService {
             returnModel.setMessage("已被借出的书籍不允许修改!!!");
             return returnModel;
         }
-        // todo 没改，图重复
         // 判断收本名称或者出版社是否更改，执行逻辑
         BookDetail bookDetail1 = bookMapper.selectBookDetailById(bookDetail.getBookId());
         // 没更改就不用管, 改了就+1
@@ -252,10 +259,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public PageData<BookDetail> searchBookDetail(String username, Integer currentPage, Integer pageSize) {
-        // 设置分页参数
-        PageHelper.startPage(currentPage, pageSize);
         // 进行分页查询
         UserInfo userInfo = userMapper.selectUserInfo(username);
+        // 设置分页参数
+        PageHelper.startPage(currentPage, pageSize);
         List<BookDetail> bookDetails = bookMapper.selectBookDetail(userInfo.getUserId());
         // 封装分页结果
         PageInfo<BookDetail> pageInfo = new PageInfo<>(bookDetails);
@@ -293,6 +300,26 @@ public class BookServiceImpl implements BookService {
         bookMapper.returnBookDetails(bookId);
         returnModel.setFlag(true);
         returnModel.setMessage("归还成功！");
+        return returnModel;
+    }
+
+    @Override
+    public ReturnModel deleteBook(Integer bookInfoId) {
+        ReturnModel returnModel = new ReturnModel();
+        bookMapper.selectNameById(bookInfoId);
+        BookInfo bookInfo = bookMapper.selectBookInfoById(bookInfoId);
+        List<BookDetail> bookDetails = bookMapper.selectBookDetailByBookInfo(bookInfo);
+        for (BookDetail bookDetail : bookDetails) {
+            if (bookDetail.getIsBorrowed()) {
+                returnModel.setMessage("该图书正在被借阅，不能删除！");
+                returnModel.setFlag(false);
+                return returnModel;
+            }
+        }
+        deleteBookDetailsByBookId(bookInfoId);
+        deleteById(bookInfoId);
+        returnModel.setFlag(true);
+        returnModel.setMessage("删除成功!!!");
         return returnModel;
     }
 

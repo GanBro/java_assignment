@@ -13,6 +13,7 @@ import com.ganbro.service.UserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final BookMapper bookMapper;
@@ -30,8 +32,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public PageData<UserInfo> searchUserInfoByPage(String query, int pageNum, int pageSize) {
-        // 设置分页参数
-        PageHelper.startPage(pageNum, pageSize);
         // 进行分页查询
         List<UserInfo> userList1 = userMapper.searchUserInfoByQuery(query);
 
@@ -51,6 +51,8 @@ public class UserServiceImpl implements UserService {
             userInfo.setOverdueBooks(overdueBooks); // 设置到期的书
             userMapper.updateUserInfo(userInfo);
         }
+        // 设置分页参数
+        PageHelper.startPage(pageNum, pageSize);
         // 更新后再执行一次
         List<UserInfo> userList = userMapper.searchUserInfoByQuery(query);
 

@@ -65,11 +65,12 @@
                 </el-table>
 
                 <el-pagination
+                        @size-change="bookDetailHandleSizeChange"
                         @current-change="bookDetailHandleCurrentChange"
                         :current-page.sync="currentPage"
                         :page-size="pageSize"
-                        :page-sizes="[10, 20, 30, 40]"
-                        layout="total, prev, pager, next"
+                        :page-sizes="[5, 7, 10, 20]"
+                        layout="total, sizes, prev, pager, next, jumper"
                         :total="totalItems"
                 ></el-pagination>
             </div>
@@ -102,6 +103,10 @@
             this.initData(); // 要先获取到username才能调用initData();
         },
         methods: {
+            bookDetailHandleSizeChange(pageSize) {
+                this.pageSize = pageSize
+                this.search(this.currentPage, this.pageSize)
+            },
             handleSelect(index) {
                 this.activeIndex = index;
                 if (index === 'bookDetail') {
@@ -131,7 +136,9 @@
                         const result = response.data; // 获取整个Result对象
                         if (result.code === 0) { // 判断操作结果代码
                             this.pagedBookDetailsList = result.data.list; // 如果成功，将数据部分赋值给 pagedBookDetailsList
-                            this.totalItems = result.data.totalItems
+                            this.totalItems = result.data.totalItems;
+                            console.log(this.currentPage, this.pageSize);
+                            console.log(this.pagedBookDetailsList);
                         } else {
                             this.$message.error(result.message); // 如果失败，显示错误消息
                         }

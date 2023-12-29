@@ -25,7 +25,7 @@ public interface BookService {
 
     void insertByBookBookInfo(BookInfo bookInfo);
 
-    List<BookDetail> selectBookDetailByBookInfo(Integer bookInfoId);
+    PageData<BookDetail> selectBookDetailByBookInfo(Integer bookInfoId, Integer currentPage, Integer pageSize);
 
     void deleteBookDetailsByBookId(Integer bookInfoId);
 
@@ -41,4 +41,6 @@ public interface BookService {
     PageData<BookDetail> searchBookDetail(String username, Integer currentPage, Integer pageSize);
 
     ReturnModel returnBook(Integer bookId);
+
+    ReturnModel deleteBook(Integer bookInfoId);
 }

@@ -21,7 +21,7 @@ public class Knife4jConfiguration {
                         //描述字段支持Markdown语法
                         .description("# Knife4j RESTful APIs")
                         .termsOfServiceUrl("https://doc.xiaominfo.com/")
-                        .contact("xiaoymin@foxmail.com")
+                        .contact("2551921037@qq.com")
                         .version("1.0")
                         .build())
                 //分组名称

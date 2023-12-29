@@ -19,16 +19,29 @@
     <el-container>
         <!--用户管理界面-->
         <el-header style="display: flex; justify-content: flex-end;">
-            <el-button type="text" @click="goToUserManagement">
-                <i class="el-icon-user" style="font-size: 40px;"></i>
-                <div style="font-size: 16px;">用户管理</div>
-            </el-button>
-            <el-button type="text" @click="logout">
-<!--                <i class="el-icon-s-operation" style="font-size: 40px;"></i>-->
-                <img src="../imgs/logout.webp" alt="Description of your image" style="width: 40px; height: 40px;">
-                <div style="font-size: 16px;">退出登录</div>
-            </el-button>
+            <!-- 模板中的 el-dropdown 部分 -->
+            <el-dropdown @command="handleCommand">
+                <span class="el-dropdown-link">
+                  <i class="el-icon-setting" style="font-size: 40px;"></i>
+                  <div style="font-size: 16px;">设置</div>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="goToUserManagement">用户管理</el-dropdown-item>
+                    <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+                </el-dropdown-menu>
+            </el-dropdown>
         </el-header>
+<!--        <el-header style="display: flex; justify-content: flex-end;">-->
+<!--            <el-button type="text" @click="goToUserManagement">-->
+<!--                <i class="el-icon-user" style="font-size: 40px;"></i>-->
+<!--                <div style="font-size: 16px;">用户管理</div>-->
+<!--            </el-button>-->
+<!--            <el-button type="text" @click="logout">-->
+<!--&lt;!&ndash;                <i class="el-icon-s-operation" style="font-size: 40px;"></i>&ndash;&gt;-->
+<!--                <img src="../imgs/logout.webp" alt="Description of your image" style="width: 40px; height: 40px;">-->
+<!--                <div style="font-size: 16px;">退出登录</div>-->
+<!--            </el-button>-->
+<!--        </el-header>-->
         <el-main>
             <el-row :gutter="20">
                 <el-col :span="8">
@@ -208,6 +221,13 @@
             };
         },
         methods: {
+            handleCommand(command) {
+                if (command === 'goToUserManagement') {
+                    this.goToUserManagement();
+                } else if (command === 'logout') {
+                    this.logout();
+                }
+            },
             // 修改 searchBooks 方法
             searchBooks(currentPage, pageSize) {
                 axios.get(`/api/books/searchByPage?query=${this.searchKeyword}&pageNum=${currentPage}&pageSize=${pageSize}`)

@@ -42,10 +42,6 @@
                 </el-form>
             </el-card>
         </el-main>
-
-        <el-footer style="text-align: center; position: absolute; bottom: 30px; width: 100%;">
-            <span class="text-muted">欢迎使用图书馆管理系统</span>
-        </el-footer>
     </el-container>
 </div>
 
@@ -148,10 +144,7 @@
                         }
                     })
                     .catch(error => {
-                        // 请求失败的处理逻辑
-                        // console.error('发送验证码失败', error.response.data.message);
-                        this.$message.error('发送验证码失败,可能原因是您的邮箱地址格式不正确!!!')
-                        console.error('发送验证码失败', error.response.data.message);
+                        this.$message.error('服务器出错啦!!!')
                         this.isSendingCode = false; // 发送失败后将状态设回false
                     });
             },

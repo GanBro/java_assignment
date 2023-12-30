@@ -147,7 +147,7 @@
                     .catch(error => {
                         // 请求失败的处理逻辑
                         // console.error('发送验证码失败', error.response.data.message);
-                        this.$message.error('发送验证码失败,可能原因是您的邮箱地址格式不正确!!!')
+                        this.$message.error('服务器出错啦!!!')
                         console.error('发送验证码失败', error.response.data.message);
                         this.isSendingCode = false; // 发送失败后将状态设回false
                     });
